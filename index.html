@@ -849,6 +849,8 @@ function renderOutrosRight(){
 
 
 
+
+
 // ── ALL EXISTING JS (foods, state, vitamins, etc.) will be injected here ──
 
 // ── FOOD DATABASE ────────────────────────────────────────────────────────────
@@ -1109,7 +1111,11 @@ function load(){
     }
   }catch(e){}
   const today=todayKey();
-  if(state.lastDate!==today){state.foods=[];state.vit={};state.waterChecks=0;state.lastDate=today;persist();}
+  if(state.lastDate!==today){
+    state.foods=[];state.vit={};state.waterChecks=0;
+    state.sleep='';state.kgToday='';state.exToday='';state.kerToday='';
+    state.lastDate=today;persist();
+  }
 }
 function persist(){ try{localStorage.setItem('nutr3',JSON.stringify(state));}catch(e){} }
 function todayKey(){
@@ -1392,18 +1398,20 @@ async function pushToSheets(entry){
   const headers = {'Content-Type':'application/json'};
   const sheetEntry = {...entry, data: entry.date};
 
-  // Delete existing rows for this date first (avoid duplicates)
+  // Delete ALL existing rows for this date using SheetDB search+delete
+  // SheetDB delete endpoint: DELETE /column_name/value
   try {
-    await fetch(`${url}/data/${entry.date}`, {method:'DELETE', headers});
-  } catch(e) { /* ignore if not found */ }
+    await fetch(`${url}/data/${entry.date}`, {method:'DELETE'});
+  } catch(e) {}
+  // Wait a moment for delete to complete
+  await new Promise(r => setTimeout(r, 300));
 
-  // POST new row
-  const res = await fetch(url, {
+  // POST single clean row
+  await fetch(url, {
     method: 'POST',
     headers,
     body: JSON.stringify({data: sheetEntry})
   });
-  if(!res.ok) throw new Error('POST failed: ' + res.status);
 }
 
 function renderVitHeatmap(days){
@@ -3060,10 +3068,17 @@ function renderWeekRings(){
 }
 
 load(); initCurrentMonth(); setDate();
-const _adEl=document.getElementById('active-date');if(_adEl)_adEl.value=todayKey();
+const _adEl=document.getElementById('active-date');
+if(_adEl) _adEl.value=todayKey();
+// Clear fields for fresh day
+['e-sleep','e-kg','e-notes'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+const _exEl=document.getElementById('e-ex');if(_exEl)_exEl.value='';
+try{setKer('');}catch(e){}
 loadCustomFoods();
 renderMetrics(); renderFoodList(); renderVitamins(); renderDailyProgress(); renderWater(); renderWeekCal(); renderRightCol(); renderMiniCals(); renderDailyProgress(); updateDateDisplay(); renderWeekRings();
 syncFromSheets();
+
+
 
 
 
