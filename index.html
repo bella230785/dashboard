@@ -848,6 +848,7 @@ function renderOutrosRight(){
 
 
 
+
 // ── ALL EXISTING JS (foods, state, vitamins, etc.) will be injected here ──
 
 // ── FOOD DATABASE ────────────────────────────────────────────────────────────
@@ -1033,7 +1034,10 @@ async function syncFromSheets(){
       if(r.foods && r.foods.startsWith('[')) {
         try { entry._foods = JSON.parse(r.foods); } catch(e) { entry._foods = []; }
       }
-      merged[dateVal] = entry;
+      // Keep entry with most data (highest cal wins over empty rows)
+      if(!merged[dateVal] || (entry.cal > 0 && entry.cal >= (merged[dateVal].cal||0))){
+        merged[dateVal] = entry;
+      }
     });
 
     state.days = Object.values(merged).sort((a,b)=>a.date.localeCompare(b.date));
@@ -1387,8 +1391,13 @@ async function pushToSheets(entry){
   const url     = state.sheetsUrl;
   const headers = {'Content-Type':'application/json'};
   const sheetEntry = {...entry, data: entry.date};
-  // Always POST — SheetDB will add new row
-  // Duplicates are acceptable; sync reads latest by date
+
+  // Delete existing rows for this date first (avoid duplicates)
+  try {
+    await fetch(`${url}/data/${entry.date}`, {method:'DELETE', headers});
+  } catch(e) { /* ignore if not found */ }
+
+  // POST new row
   const res = await fetch(url, {
     method: 'POST',
     headers,
@@ -3055,6 +3064,7 @@ const _adEl=document.getElementById('active-date');if(_adEl)_adEl.value=todayKey
 loadCustomFoods();
 renderMetrics(); renderFoodList(); renderVitamins(); renderDailyProgress(); renderWater(); renderWeekCal(); renderRightCol(); renderMiniCals(); renderDailyProgress(); updateDateDisplay(); renderWeekRings();
 syncFromSheets();
+
 
 
 
