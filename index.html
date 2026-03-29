@@ -847,6 +847,7 @@ function renderOutrosRight(){
 
 
 
+
 // ── ALL EXISTING JS (foods, state, vitamins, etc.) will be injected here ──
 
 // ── FOOD DATABASE ────────────────────────────────────────────────────────────
@@ -1385,27 +1386,15 @@ async function saveDay(){
 async function pushToSheets(entry){
   const url     = state.sheetsUrl;
   const headers = {'Content-Type':'application/json'};
-  // Column in Sheets is 'data' (Portuguese), not 'date'
   const sheetEntry = {...entry, data: entry.date};
-
-  // Try PATCH — update existing row where data=date
-  try {
-    const patch = await fetch(`${url}/data/${entry.date}`, {
-      method:'PATCH', headers,
-      body: JSON.stringify({data: sheetEntry})
-    });
-    if(patch.ok){
-      const result = await patch.json();
-      if(result.updated > 0) return;
-    }
-  } catch(e) { /* fall through */ }
-
-  // POST — insert new row
-  const post = await fetch(url, {
-    method:'POST', headers,
+  // Always POST — SheetDB will add new row
+  // Duplicates are acceptable; sync reads latest by date
+  const res = await fetch(url, {
+    method: 'POST',
+    headers,
     body: JSON.stringify({data: sheetEntry})
   });
-  if(!post.ok) throw new Error('POST failed: ' + post.status);
+  if(!res.ok) throw new Error('POST failed: ' + res.status);
 }
 
 function renderVitHeatmap(days){
@@ -3066,6 +3055,7 @@ const _adEl=document.getElementById('active-date');if(_adEl)_adEl.value=todayKey
 loadCustomFoods();
 renderMetrics(); renderFoodList(); renderVitamins(); renderDailyProgress(); renderWater(); renderWeekCal(); renderRightCol(); renderMiniCals(); renderDailyProgress(); updateDateDisplay(); renderWeekRings();
 syncFromSheets();
+
 
 
 
