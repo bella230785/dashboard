@@ -852,6 +852,9 @@ function renderOutrosRight(){
 
 
 
+
+
+
 // ── ALL EXISTING JS (foods, state, vitamins, etc.) will be injected here ──
 
 // ── FOOD DATABASE ────────────────────────────────────────────────────────────
@@ -1028,8 +1031,9 @@ async function syncFromSheets(){
         poly:     pf(r.poly),
         nourkrin: pf(r.nourkrin),
         vitaD:    pf(r.vitaD),
+        vitC:     pf(r.vitC||r.vitaminaC||0),
         ferro:    pf(r.ferro),
-        creatina: pf(r.creatina),
+        colageno: pf(r.colageno||r.creatina||0),
         minoxidil:pf(r.minoxidil),
         magnesio: pf(r.magnesio),
         foods:    r.foods||'',
@@ -1176,8 +1180,9 @@ function loadDay(){
     if(existing.poly)      state.vit['0-0'] = true;
     if(existing.nourkrin)  state.vit['0-1'] = true;
     if(existing.vitaD)     state.vit['0-2'] = true;
+    if(existing.vitC)      state.vit['1-0'] = true;
     if(existing.ferro)     state.vit['1-1'] = true;
-    if(existing.creatina)  state.vit['2-0'] = true;
+    if(existing.colageno||existing.creatina) state.vit['2-0'] = true;
     if(existing.minoxidil) state.vit['2-1'] = true;
     if(existing.magnesio)  state.vit['2-2'] = true;
 
@@ -3088,6 +3093,9 @@ try{setKer('');}catch(e){}
 loadCustomFoods();
 renderMetrics(); renderFoodList(); renderVitamins(); renderDailyProgress(); renderWater(); renderWeekCal(); renderRightCol(); renderMiniCals(); renderDailyProgress(); updateDateDisplay(); renderWeekRings();
 syncFromSheets();
+
+
+
 
 
 
