@@ -846,6 +846,7 @@ function renderOutrosRight(){
 
 
 
+
 // ── ALL EXISTING JS (foods, state, vitamins, etc.) will be injected here ──
 
 // ── FOOD DATABASE ────────────────────────────────────────────────────────────
@@ -1027,6 +1028,10 @@ async function syncFromSheets(){
         notes:    r.notes||'',
       };
       if(r.kg) entry.kg = parseFloat(r.kg)||0;
+      // Restore foods array from JSON string
+      if(r.foods && r.foods.startsWith('[')) {
+        try { entry._foods = JSON.parse(r.foods); } catch(e) { entry._foods = []; }
+      }
       merged[dateVal] = entry;
     });
 
@@ -1047,7 +1052,7 @@ async function syncFromSheets(){
       if(todayData.minoxidil) state.vit['2-1']=true;
       if(todayData.magnesio)  state.vit['2-2']=true;
       state.waterChecks = todayData.water ? Math.min(4, Math.round(todayData.water/500)) : 0;
-      state.foods = todayData._foods || [];
+      state.foods = todayData._foods || todayData._foodsBackup || [];
       // Use setTimeout to ensure DOM is ready
       setTimeout(()=>{
         const sl=document.getElementById('e-sleep'); if(sl) sl.value=todayData.sleep||'';
@@ -1088,7 +1093,9 @@ function load(){
       const htmlDays=[...state.days];
       state=Object.assign({},state,saved);
       const merged={};
+      // HTML seed first (lowest priority)
       htmlDays.forEach(d=>merged[d.date]=d);
+      // localStorage ALWAYS wins (higher priority)
       (saved.days||[]).forEach(d=>merged[d.date]=d);
       state.days=Object.values(merged).sort((a,b)=>a.date.localeCompare(b.date));
       // merge treinos: keep saved ones, seed only if empty
@@ -1354,7 +1361,7 @@ async function saveDay(){
     water:state.waterChecks*500, sleep, ker, ex,
     poly:state.vit['0-0']?1:0, nourkrin:state.vit['0-1']?1:0, vitaD:state.vit['0-2']?1:0,
     ferro:state.vit['1-1']?1:0, creatina:0, minoxidil:state.vit['2-1']?1:0, magnesio:state.vit['2-2']?1:0,
-    foods:state.foods.map(f=>`${f.qty>1?f.qty+'× ':''}${f.n}`).join(', '),
+    foods:JSON.stringify(state.foods),
     _foods:JSON.parse(JSON.stringify(state.foods)),
   };
 
@@ -3059,6 +3066,7 @@ const _adEl=document.getElementById('active-date');if(_adEl)_adEl.value=todayKey
 loadCustomFoods();
 renderMetrics(); renderFoodList(); renderVitamins(); renderDailyProgress(); renderWater(); renderWeekCal(); renderRightCol(); renderMiniCals(); renderDailyProgress(); updateDateDisplay(); renderWeekRings();
 syncFromSheets();
+
 
 
 
