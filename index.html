@@ -851,6 +851,7 @@ function renderOutrosRight(){
 
 
 
+
 // ── ALL EXISTING JS (foods, state, vitamins, etc.) will be injected here ──
 
 // ── FOOD DATABASE ────────────────────────────────────────────────────────────
@@ -1005,7 +1006,10 @@ async function syncFromSheets(){
     rows.forEach(r=>{
       // SheetDB may use 'data' (Portuguese) instead of 'date'
       const dateVal = r.date || r.data || '';
-      if(!dateVal) return;
+      // Skip rows with empty date or future dates beyond today
+      if(!dateVal || dateVal > todayKey()) return;
+      // Skip rows that are clearly test/empty data
+      if(dateVal === '' || dateVal.length !== 10) return;
       // Handle comma as decimal separator (pt-BR)
       const pf = v => parseFloat(String(v||0).replace(',','.')) || 0;
       const entry = {
@@ -1048,6 +1052,13 @@ async function syncFromSheets(){
     // Refresh UI — reload today's data from synced state
     const activeDate = getActiveDate();
     const todayData = state.days.find(d => d.date === activeDate);
+    // Only restore today if it came from Sheets (not from local state)
+    const syncedToday = merged[todayKey()];
+    if(syncedToday && syncedToday.date === todayKey() && syncedToday.cal > 0){
+      todayData = syncedToday;
+    } else {
+      todayData = null; // don't overwrite fresh day with wrong data
+    }
     if(todayData){
       // Restore vit checks
       state.vit = {};
@@ -3077,6 +3088,7 @@ try{setKer('');}catch(e){}
 loadCustomFoods();
 renderMetrics(); renderFoodList(); renderVitamins(); renderDailyProgress(); renderWater(); renderWeekCal(); renderRightCol(); renderMiniCals(); renderDailyProgress(); updateDateDisplay(); renderWeekRings();
 syncFromSheets();
+
 
 
 
