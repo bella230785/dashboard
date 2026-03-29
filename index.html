@@ -845,6 +845,7 @@ function renderOutrosRight(){
 
 
 
+
 // ── ALL EXISTING JS (foods, state, vitamins, etc.) will be injected here ──
 
 // ── FOOD DATABASE ────────────────────────────────────────────────────────────
@@ -1047,12 +1048,14 @@ async function syncFromSheets(){
       if(todayData.magnesio)  state.vit['2-2']=true;
       state.waterChecks = todayData.water ? Math.min(4, Math.round(todayData.water/500)) : 0;
       state.foods = todayData._foods || [];
-      // Restore fields
-      const sl=document.getElementById('e-sleep'); if(sl) sl.value=todayData.sleep||'';
-      const kg=document.getElementById('e-kg');    if(kg) kg.value=todayData.kg||'';
-      const ex=document.getElementById('e-ex');    if(ex) ex.value=todayData.ex||'';
-      const no=document.getElementById('e-notes'); if(no) no.value=todayData.notes||'';
-      if(todayData.ker) setKer(todayData.ker);
+      // Use setTimeout to ensure DOM is ready
+      setTimeout(()=>{
+        const sl=document.getElementById('e-sleep'); if(sl) sl.value=todayData.sleep||'';
+        const kg=document.getElementById('e-kg');    if(kg) kg.value=todayData.kg||'';
+        const ex=document.getElementById('e-ex');    if(ex) ex.value=todayData.ex||'';
+        const no=document.getElementById('e-notes'); if(no) no.value=todayData.notes||'';
+        try{ if(todayData.ker) setKer(todayData.ker); }catch(e){}
+      }, 100);
     }
     renderMetrics();
     renderFoodList();
@@ -3056,6 +3059,7 @@ const _adEl=document.getElementById('active-date');if(_adEl)_adEl.value=todayKey
 loadCustomFoods();
 renderMetrics(); renderFoodList(); renderVitamins(); renderDailyProgress(); renderWater(); renderWeekCal(); renderRightCol(); renderMiniCals(); renderDailyProgress(); updateDateDisplay(); renderWeekRings();
 syncFromSheets();
+
 
 
 
