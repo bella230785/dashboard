@@ -856,6 +856,7 @@ function renderOutrosRight(){
 
 
 
+
 // ── ALL EXISTING JS (foods, state, vitamins, etc.) will be injected here ──
 
 // ── FOOD DATABASE ────────────────────────────────────────────────────────────
@@ -1056,7 +1057,7 @@ async function syncFromSheets(){
 
     // Refresh UI — reload today's data from synced state
     const activeDate = getActiveDate();
-    const todayData = state.days.find(d => d.date === activeDate);
+    let todayData = state.days.find(d => d.date === activeDate);
     // Only restore today if it came from Sheets (not from local state)
     const syncedToday = merged[todayKey()];
     if(syncedToday && syncedToday.date === todayKey() && syncedToday.cal > 0){
@@ -3095,6 +3096,7 @@ try{setKer('');}catch(e){}
 loadCustomFoods();
 renderMetrics(); renderFoodList(); renderVitamins(); renderDailyProgress(); renderWater(); renderWeekCal(); renderRightCol(); renderMiniCals(); renderDailyProgress(); updateDateDisplay(); renderWeekRings();
 syncFromSheets();
+
 
 
 
