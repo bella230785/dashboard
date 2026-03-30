@@ -978,6 +978,7 @@ function renderOutrosRight(){
 
 
 
+
 // ── ALL EXISTING JS (foods, state, vitamins, etc.) will be injected here ──
 
 // ── FOOD DATABASE ────────────────────────────────────────────────────────────
@@ -3297,18 +3298,21 @@ function toggleDoneTasks(){
 function renderTasks(){
   const tasks=state.tasks||[];
   const taskRow=t=>{
-    const check = t.done
-      ? '<svg width="10" height="10" viewBox="0 0 10 10"><polyline points="2,5 4.5,7.5 8,3" stroke="#3A6630" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>'
-      : '';
-    const boxBg  = t.done ? '#D9EAD3' : 'transparent';
-    const boxBdr = t.done ? '#8BB089' : 'var(--border2)';
-    const txtCol = t.done ? 'var(--text3)' : 'var(--text)';
-    const txtDec = t.done ? 'line-through' : 'none';
-    return '<div style="display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:0.5px solid var(--border)">'
-      + '<div onclick="toggleTask(\'' + t.id + '\')" style="width:16px;height:16px;border-radius:4px;border:0.5px solid ' + boxBdr + ';background:' + boxBg + ';flex-shrink:0;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s">' + check + '</div>'
-      + '<span style="flex:1;font-size:12px;color:' + txtCol + ';text-decoration:' + txtDec + ';line-height:1.4">' + t.title + '</span>'
-      + '<button onclick="deleteTask(\'' + t.id + '\')" style="background:transparent;border:none;color:var(--text3);cursor:pointer;font-size:13px;padding:0 2px;line-height:1;flex-shrink:0">×</button>'
-      + '</div>';
+    const div = document.createElement('div');
+    div.style.cssText = 'display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:0.5px solid var(--border)';
+    const box = document.createElement('div');
+    box.style.cssText = 'width:16px;height:16px;border-radius:4px;border:0.5px solid '+(t.done?'#8BB089':'var(--border2)')+';background:'+(t.done?'#D9EAD3':'transparent')+';flex-shrink:0;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s';
+    if(t.done) box.innerHTML = '<svg width="10" height="10" viewBox="0 0 10 10"><polyline points="2,5 4.5,7.5 8,3" stroke="#3A6630" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>';
+    box.addEventListener('click', ()=>toggleTask(t.id));
+    const span = document.createElement('span');
+    span.style.cssText = 'flex:1;font-size:12px;line-height:1.4;color:'+(t.done?'var(--text3)':'var(--text)')+';text-decoration:'+(t.done?'line-through':'none');
+    span.textContent = t.title;
+    const btn = document.createElement('button');
+    btn.style.cssText = 'background:transparent;border:none;color:var(--text3);cursor:pointer;font-size:13px;padding:0 2px;line-height:1;flex-shrink:0';
+    btn.textContent = '×';
+    btn.addEventListener('click', ()=>deleteTask(t.id));
+    div.append(box, span, btn);
+    return div;
   };
 
   // Render each category
@@ -3319,25 +3323,21 @@ function renderTasks(){
     const pending=catTasks.filter(t=>!t.done);
     const done=catTasks.filter(t=>t.done);
     if(countEl) countEl.textContent=pending.length?pending.length+' pendente'+(pending.length>1?'s':''):'';
-    if(el) el.innerHTML=pending.length
-      ? pending.map(taskRow).join('')
-      : '<p style="font-size:11px;color:var(--text3);padding:4px 0">nenhuma ✓</p>';
+    if(el){
+      el.innerHTML='';
+      if(pending.length){ pending.forEach(t=>el.appendChild(taskRow(t))); }
+      else { el.innerHTML='<p style="font-size:11px;color:var(--text3);padding:4px 0">nenhuma ✓</p>'; }
+    }
   });
 
   // Concluídas (all categories)
   const doneEl=document.getElementById('tasks-done');
   const allDone=tasks.filter(t=>t.done).sort((a,b)=>(b.doneAt||'').localeCompare(a.doneAt||''));
-  if(doneEl) doneEl.innerHTML=allDone.length
-    ? allDone.map(t=>`
-        <div style="display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:0.5px solid var(--border)">
-          <div onclick="toggleTask('${t.id}')" style="width:16px;height:16px;border-radius:4px;border:0.5px solid var(--green-dk);background:var(--green);flex-shrink:0;cursor:pointer;display:flex;align-items:center;justify-content:center">
-            <svg width="10" height="10" viewBox="0 0 10 10"><polyline points="2,5 4.5,7.5 8,3" stroke="#3A6630" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>
-          </div>
-          <span style="flex:1;font-size:12px;color:var(--text3);text-decoration:line-through">${t.title}</span>
-          <span style="font-size:10px;color:var(--text3);margin-right:4px">${TASK_CATEGORIES.find(c=>c.id===t.category)?.emoji||''}</span>
-          <button onclick="deleteTask('${t.id}')" style="background:transparent;border:none;color:var(--text3);cursor:pointer;font-size:13px;padding:0 2px;line-height:1">×</button>
-        </div>`).join('')
-    : '<p style="font-size:11px;color:var(--text3)">nenhuma tarefa concluída</p>';
+  if(doneEl){
+    doneEl.innerHTML='';
+    if(allDone.length){ allDone.forEach(t=>doneEl.appendChild(taskRow(t))); }
+    else { doneEl.innerHTML='<p style="font-size:11px;color:var(--text3)">nenhuma tarefa concluída</p>'; }
+  }
 
   // Summary
   const summary=document.getElementById('tasks-summary');
@@ -3612,6 +3612,7 @@ try{setKer('');}catch(e){}
 loadCustomFoods();
 renderMetrics(); renderFoodList(); renderVitamins(); renderDailyProgress(); renderWater(); renderWeekCal(); renderRightCol(); renderMiniCals(); renderDailyProgress(); updateDateDisplay(); renderWeekRings();
 syncFromSheets();
+
 
 
 
