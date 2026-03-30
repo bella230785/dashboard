@@ -319,7 +319,7 @@ tr:last-child td { border: none; }
 .left-col{padding:1.5rem 1rem 1.5rem 1.25rem;overflow-y:auto;max-height:calc(100vh - 68px);border-right:1px solid var(--border)}
 .center-col{padding:1.5rem 1rem;overflow-y:auto;max-height:calc(100vh - 68px)}
 .right-col{padding:1.5rem 1.25rem 1.5rem 1rem;overflow-y:auto;max-height:calc(100vh - 68px);border-left:1px solid var(--border)}
-@media(max-width:900px){.left-col,.center-col,.right-col{max-height:none;border:none}}
+@media(max-width:900px){.left-col,.center-col,.right-col{max-height:none;border:none}.left-col,.right-col{display:none}.center-col{padding:1rem}}
 .page{display:none}.page.on{display:contents}
 .module-placeholder{border:1px dashed var(--border2);border-radius:var(--radius-lg);padding:2rem 1rem;text-align:center;cursor:pointer;transition:background .15s;margin-bottom:1rem}
 .page{display:none}
@@ -343,7 +343,6 @@ tr:last-child td { border: none; }
       <button class="nb" onclick="nav('mes',this)">mês</button>
       <button class="nb" onclick="nav('treino',this)">treino</button>
       <button class="nb" onclick="nav('bio',this)">corpo</button>
-      <button class="nb" onclick="nav('tasks',this)">tarefas</button>
       <button class="nb" onclick="nav('config',this)">config</button>
     </div>
     <button onclick="syncFromSheets()" style="font-size:12px;padding:5px 12px;border-radius:20px;border:0.5px solid var(--border2);background:transparent;color:var(--text3);cursor:pointer;font-family:inherit">↻ sync</button>
@@ -701,121 +700,6 @@ tr:last-child td { border: none; }
   </div>
 
 
-  <!-- ══ TAREFAS ══════════════════════════════════════════════════════════════ -->
-  <div class="page" id="page-tasks">
-
-    <div class="left-col"></div>
-
-    <div class="center-col" style="display:flex;flex-direction:column;gap:.75rem">
-
-      <div style="padding:.25rem 0 .75rem">
-        <div style="font-size:22px;font-weight:600;letter-spacing:-.03em;color:var(--text);line-height:1">tarefas</div>
-        <div style="font-size:12px;color:var(--text3);margin-top:3px;letter-spacing:.01em">fim de semana</div>
-      </div>
-
-      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:.75rem">
-        <!-- Col A -->
-        <div style="display:flex;flex-direction:column;gap:.75rem">
-          <div style="background:var(--card);border:0.5px solid var(--border);border-radius:var(--radius-lg);padding:1rem 1.25rem">
-            <div style="display:flex;align-items:center;gap:6px;margin-bottom:10px">
-              <span>🏠</span><span class="section-label" style="margin-bottom:0">fds / casa</span>
-              <span id="tasks-count-fds-casa" style="font-size:10px;color:var(--text3);margin-left:auto"></span>
-            </div>
-            <div id="tasks-cat-fds-casa"></div>
-            <div style="margin-top:8px;display:flex;gap:5px">
-              <input type="text" id="task-input-fds-casa" placeholder="+ tarefa" onkeydown="if(event.key==='Enter')addTask('fds-casa')" style="flex:1;font-size:12px;padding:5px 8px;border:0.5px solid var(--border);border-radius:var(--radius);background:transparent;color:var(--text);font-family:inherit;outline:none"/>
-              <button onclick="addTask('fds-casa')" style="font-size:13px;padding:5px 10px;border:0.5px solid var(--border2);border-radius:var(--radius);background:transparent;color:var(--text2);cursor:pointer;font-family:inherit">+</button>
-            </div>
-          </div>
-          <div style="background:var(--card);border:0.5px solid var(--border);border-radius:var(--radius-lg);padding:1rem 1.25rem">
-            <div style="display:flex;align-items:center;gap:6px;margin-bottom:10px">
-              <span>📦</span><span class="section-label" style="margin-bottom:0">fds / organizar</span>
-              <span id="tasks-count-fds-org" style="font-size:10px;color:var(--text3);margin-left:auto"></span>
-            </div>
-            <div id="tasks-cat-fds-org"></div>
-            <div style="margin-top:8px;display:flex;gap:5px">
-              <input type="text" id="task-input-fds-org" placeholder="+ tarefa" onkeydown="if(event.key==='Enter')addTask('fds-org')" style="flex:1;font-size:12px;padding:5px 8px;border:0.5px solid var(--border);border-radius:var(--radius);background:transparent;color:var(--text);font-family:inherit;outline:none"/>
-              <button onclick="addTask('fds-org')" style="font-size:13px;padding:5px 10px;border:0.5px solid var(--border2);border-radius:var(--radius);background:transparent;color:var(--text2);cursor:pointer;font-family:inherit">+</button>
-            </div>
-          </div>
-          <div style="background:var(--card);border:0.5px solid var(--border);border-radius:var(--radius-lg);padding:1rem 1.25rem">
-            <div style="display:flex;align-items:center;gap:6px;margin-bottom:10px">
-              <span>🌸</span><span class="section-label" style="margin-bottom:0">self-care</span>
-              <span id="tasks-count-self-care" style="font-size:10px;color:var(--text3);margin-left:auto"></span>
-            </div>
-            <div id="tasks-cat-self-care"></div>
-            <div style="margin-top:8px;display:flex;gap:5px">
-              <input type="text" id="task-input-self-care" placeholder="+ tarefa" onkeydown="if(event.key==='Enter')addTask('self-care')" style="flex:1;font-size:12px;padding:5px 8px;border:0.5px solid var(--border);border-radius:var(--radius);background:transparent;color:var(--text);font-family:inherit;outline:none"/>
-              <button onclick="addTask('self-care')" style="font-size:13px;padding:5px 10px;border:0.5px solid var(--border2);border-radius:var(--radius);background:transparent;color:var(--text2);cursor:pointer;font-family:inherit">+</button>
-            </div>
-          </div>
-        </div>
-        <!-- Col B -->
-        <div style="display:flex;flex-direction:column;gap:.75rem">
-          <div style="background:var(--card);border:0.5px solid var(--border);border-radius:var(--radius-lg);padding:1rem 1.25rem">
-            <div style="display:flex;align-items:center;gap:6px;margin-bottom:10px">
-              <span>🥗</span><span class="section-label" style="margin-bottom:0">prep marmita</span>
-              <span id="tasks-count-marmita" style="font-size:10px;color:var(--text3);margin-left:auto"></span>
-            </div>
-            <div id="tasks-cat-marmita"></div>
-            <div style="margin-top:8px;display:flex;gap:5px">
-              <input type="text" id="task-input-marmita" placeholder="+ tarefa" onkeydown="if(event.key==='Enter')addTask('marmita')" style="flex:1;font-size:12px;padding:5px 8px;border:0.5px solid var(--border);border-radius:var(--radius);background:transparent;color:var(--text);font-family:inherit;outline:none"/>
-              <button onclick="addTask('marmita')" style="font-size:13px;padding:5px 10px;border:0.5px solid var(--border2);border-radius:var(--radius);background:transparent;color:var(--text2);cursor:pointer;font-family:inherit">+</button>
-            </div>
-          </div>
-          <div style="background:var(--card);border:0.5px solid var(--border);border-radius:var(--radius-lg);padding:1rem 1.25rem">
-            <div style="display:flex;align-items:center;gap:6px;margin-bottom:10px">
-              <span>🌙</span><span class="section-label" style="margin-bottom:0">night prep</span>
-              <span id="tasks-count-night-prep" style="font-size:10px;color:var(--text3);margin-left:auto"></span>
-            </div>
-            <div id="tasks-cat-night-prep"></div>
-            <div style="margin-top:8px;display:flex;gap:5px">
-              <input type="text" id="task-input-night-prep" placeholder="+ tarefa" onkeydown="if(event.key==='Enter')addTask('night-prep')" style="flex:1;font-size:12px;padding:5px 8px;border:0.5px solid var(--border);border-radius:var(--radius);background:transparent;color:var(--text);font-family:inherit;outline:none"/>
-              <button onclick="addTask('night-prep')" style="font-size:13px;padding:5px 10px;border:0.5px solid var(--border2);border-radius:var(--radius);background:transparent;color:var(--text2);cursor:pointer;font-family:inherit">+</button>
-            </div>
-          </div>
-        </div>
-        <!-- Col C -->
-        <div style="display:flex;flex-direction:column;gap:.75rem">
-          <div style="background:var(--card);border:0.5px solid var(--border);border-radius:var(--radius-lg);padding:1rem 1.25rem">
-            <div style="display:flex;align-items:center;gap:6px;margin-bottom:10px">
-              <span>🐶</span><span class="section-label" style="margin-bottom:0">tommy</span>
-              <span id="tasks-count-tommy" style="font-size:10px;color:var(--text3);margin-left:auto"></span>
-            </div>
-            <div id="tasks-cat-tommy"></div>
-            <div style="margin-top:8px;display:flex;gap:5px">
-              <input type="text" id="task-input-tommy" placeholder="+ tarefa" onkeydown="if(event.key==='Enter')addTask('tommy')" style="flex:1;font-size:12px;padding:5px 8px;border:0.5px solid var(--border);border-radius:var(--radius);background:transparent;color:var(--text);font-family:inherit;outline:none"/>
-              <button onclick="addTask('tommy')" style="font-size:13px;padding:5px 10px;border:0.5px solid var(--border2);border-radius:var(--radius);background:transparent;color:var(--text2);cursor:pointer;font-family:inherit">+</button>
-            </div>
-          </div>
-          <div style="background:var(--card);border:0.5px solid var(--border);border-radius:var(--radius-lg);padding:1rem 1.25rem">
-            <div style="display:flex;align-items:center;gap:6px;margin-bottom:10px">
-              <span>🐱</span><span class="section-label" style="margin-bottom:0">bibi</span>
-              <span id="tasks-count-bibi" style="font-size:10px;color:var(--text3);margin-left:auto"></span>
-            </div>
-            <div id="tasks-cat-bibi"></div>
-            <div style="margin-top:8px;display:flex;gap:5px">
-              <input type="text" id="task-input-bibi" placeholder="+ tarefa" onkeydown="if(event.key==='Enter')addTask('bibi')" style="flex:1;font-size:12px;padding:5px 8px;border:0.5px solid var(--border);border-radius:var(--radius);background:transparent;color:var(--text);font-family:inherit;outline:none"/>
-              <button onclick="addTask('bibi')" style="font-size:13px;padding:5px 10px;border:0.5px solid var(--border2);border-radius:var(--radius);background:transparent;color:var(--text2);cursor:pointer;font-family:inherit">+</button>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div style="background:var(--card);border:0.5px solid var(--border);border-radius:var(--radius-lg);padding:1rem 1.25rem">
-        <div style="display:flex;align-items:center;justify-content:space-between;cursor:pointer" onclick="toggleDoneTasks()">
-          <span class="section-label" style="margin-bottom:0">concluídas</span>
-          <span id="done-arrow" style="font-size:11px;color:var(--text3)">▼</span>
-        </div>
-        <div id="tasks-done" style="display:none;margin-top:10px"></div>
-      </div>
-
-    </div>
-
-    <div class="right-col"></div>
-
-  </div>
-
   <!-- ══ CONFIG ════════════════════════════════════════════════════════════ -->
   <div class="page" id="page-config">
 
@@ -896,7 +780,6 @@ function nav(p,btn){
   if(p==='config') loadConfig();
   if(p==='treino') initTreino();
   if(p==='bio') initBio();
-  if(p==='tasks') initTasks();
 }
 function renderRightCol(){ renderWeekSummary(); renderStreak(); }
 function renderWeekSummary(){
@@ -958,6 +841,8 @@ function renderOutrosRight(){
 }
 </script>
 <script>
+
+
 
 
 
@@ -3213,6 +3098,144 @@ function renderWeekRings(){
   }
 }
 
+
+// ── BIOIMPEDÂNCIA ─────────────────────────────────────────────────────────────
+
+// ── WEEKLY RINGS ─────────────────────────────────────────────────────────────
+function renderWeekRings(){
+  const canvas = document.getElementById('weekRingsChart');
+  const legend = document.getElementById('week-rings-legend');
+  if(!canvas) return;
+
+  // Get this week's days
+  const today = todayKey();
+  const parts = today.split('-').map(Number);
+  const ref = new Date(parts[0], parts[1]-1, parts[2]);
+  const dow = ref.getDay();
+  const mon = new Date(ref);
+  mon.setDate(ref.getDate() - (dow === 0 ? 6 : dow - 1));
+
+  const weekDays = Array.from({length:7}, (_,i) => {
+    const d = new Date(mon);
+    d.setDate(mon.getDate() + i);
+    return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+  }).filter(d => d <= today);
+
+  const totalDays = weekDays.length;
+  if(totalDays === 0) return;
+
+  // Collect data
+  const rings = [
+    {
+      label: 'água',
+      color: '#7A9BC8',
+      track: '#E0EAF5',
+      count: weekDays.filter(d => {
+        const day = state.days.find(s => s.date === d);
+        const isToday = d === today;
+        const water = isToday ? state.waterChecks * 500 : (day?.water || 0);
+        return water >= (state.goals.water || 2000);
+      }).length,
+    },
+    {
+      label: 'vitaminas',
+      color: '#8BB089',
+      track: '#E0EDD9',
+      count: weekDays.filter(d => {
+        const day = state.days.find(s => s.date === d);
+        const isToday = d === today;
+        if(isToday){
+          const vitKeys = ['0-0','0-1','0-2','1-1','2-0','2-1','2-2'];
+          return vitKeys.filter(k => state.vit[k]).length >= 5;
+        }
+        return day && (day.poly + day.nourkrin + day.vitaD + day.ferro + day.minoxidil) >= 4;
+      }).length,
+    },
+    {
+      label: 'exercício',
+      color: '#C8A878',
+      track: '#F0E8DC',
+      count: weekDays.filter(d => {
+        const day = state.days.find(s => s.date === d);
+        const isToday = d === today;
+        const ex = isToday ? (state.exToday || document.getElementById('e-ex')?.value || '') : (day?.ex || '');
+        return ex && String(ex).trim() && String(ex).trim() !== '0';
+      }).length,
+    },
+  ];
+
+  // Draw concentric rings using Canvas 2D
+  const ctx = canvas.getContext('2d');
+  const dpr = window.devicePixelRatio || 1;
+  const size = 180;
+  canvas.width  = size * dpr;
+  canvas.height = size * dpr;
+  canvas.style.width  = size + 'px';
+  canvas.style.height = size + 'px';
+  ctx.scale(dpr, dpr);
+
+  const cx = size / 2;
+  const cy = size / 2;
+  const ringW = 14;
+  const gap   = 6;
+  const radii = [72, 72 - ringW - gap, 72 - (ringW + gap) * 2];
+
+  ctx.clearRect(0, 0, size, size);
+
+  rings.forEach((ring, i) => {
+    const r   = radii[i];
+    const pct = Math.min(ring.count / totalDays, 1);
+    const startAngle = -Math.PI / 2;
+    const endAngle   = startAngle + 2 * Math.PI * pct;
+
+    // Track (background)
+    ctx.beginPath();
+    ctx.arc(cx, cy, r, 0, 2 * Math.PI);
+    ctx.strokeStyle = ring.track;
+    ctx.lineWidth   = ringW;
+    ctx.lineCap     = 'round';
+    ctx.stroke();
+
+    // Fill
+    if(pct > 0){
+      ctx.beginPath();
+      ctx.arc(cx, cy, r, startAngle, endAngle);
+      ctx.strokeStyle = ring.color;
+      ctx.lineWidth   = ringW;
+      ctx.lineCap     = 'round';
+      ctx.stroke();
+    }
+
+    ring.pct = Math.round(pct * 100);
+  });
+
+  // Center text — overall average
+  const avg = Math.round(rings.reduce((s,r) => s + r.pct, 0) / rings.length);
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillStyle = '#3D3B38';
+  ctx.font = 'bold 24px Schibsted Grotesk, sans-serif';
+  ctx.fillText(avg + '%', cx, cy - 6);
+  ctx.font = '11px Schibsted Grotesk, sans-serif';
+  ctx.fillStyle = '#A8A79F';
+  ctx.fillText('da semana', cx, cy + 14);
+
+  // Legend
+  if(legend){
+    legend.innerHTML = rings.map(r => `
+      <div style="display:flex;align-items:center;justify-content:space-between">
+        <div style="display:flex;align-items:center;gap:7px">
+          <div style="width:10px;height:10px;border-radius:50%;background:${r.color};flex-shrink:0"></div>
+          <span style="font-size:11px;color:var(--text2)">${r.label}</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:6px">
+          <span style="font-size:11px;color:var(--text3)">${r.count}/${totalDays} dias</span>
+          <span style="font-size:12px;font-weight:500;color:var(--text)">${r.pct}%</span>
+        </div>
+      </div>`).join('');
+  }
+}
+
 // ── TAREFAS ───────────────────────────────────────────────────────────────────
 const TASK_CATS = [
   {id:'fds-casa',   emoji:'🏠', label:'fds / casa'},
@@ -3322,6 +3345,8 @@ function renderTasks(){
     }
   }
 }
+
+
 
 
 
