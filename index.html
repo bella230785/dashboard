@@ -869,6 +869,7 @@ function renderOutrosRight(){
 
 
 
+
 // ── ALL EXISTING JS (foods, state, vitamins, etc.) will be injected here ──
 
 // ── FOOD DATABASE ────────────────────────────────────────────────────────────
@@ -3346,9 +3347,11 @@ function renderTasks(){
   }
 }
 
-
-
-
+load(); initCurrentMonth(); setDate();
+const _adEl=document.getElementById('active-date');if(_adEl)_adEl.value=todayKey();
+loadCustomFoods();
+renderMetrics(); renderFoodList(); renderVitamins(); renderWater(); renderWeekCal(); renderRightCol(); renderMiniCals(); renderDailyProgress(); updateDateDisplay(); renderWeekRings();
+syncFromSheets();
 
 </script>
 </body>
