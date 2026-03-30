@@ -976,6 +976,7 @@ function renderOutrosRight(){
 
 
 
+
 // ── ALL EXISTING JS (foods, state, vitamins, etc.) will be injected here ──
 
 // ── FOOD DATABASE ────────────────────────────────────────────────────────────
@@ -3523,24 +3524,6 @@ async function pushTaskToSheets(task){
   await fetch(`${baseUrl}?sheet=tasks`, {method:'POST', headers, body:JSON.stringify({data:entry})});
 }
 
-async function addTask(){
-  const input = document.getElementById('task-input');
-  const title = input?.value.trim();
-  if(!title) return;
-  const task = {
-    id: Date.now().toString(),
-    title,
-    done: false,
-    createdAt: new Date().toISOString().slice(0,19),
-    doneAt: '',
-  };
-  if(!state.tasks) state.tasks=[];
-  state.tasks.unshift(task);
-  persist();
-  if(input) input.value='';
-  renderTasks();
-  await pushTaskToSheets(task);
-}
 
 async function toggleTask(id){
   const task = state.tasks.find(t=>t.id===id);
@@ -3622,6 +3605,7 @@ try{setKer('');}catch(e){}
 loadCustomFoods();
 renderMetrics(); renderFoodList(); renderVitamins(); renderDailyProgress(); renderWater(); renderWeekCal(); renderRightCol(); renderMiniCals(); renderDailyProgress(); updateDateDisplay(); renderWeekRings();
 syncFromSheets();
+
 
 
 
