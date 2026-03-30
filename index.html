@@ -979,6 +979,7 @@ function renderOutrosRight(){
 
 
 
+
 // ── ALL EXISTING JS (foods, state, vitamins, etc.) will be injected here ──
 
 // ── FOOD DATABASE ────────────────────────────────────────────────────────────
@@ -3295,25 +3296,27 @@ function toggleDoneTasks(){
   if(arrow) arrow.textContent=open?'▲':'▼';
 }
 
+function taskRow(t){
+  const div = document.createElement('div');
+  div.style.cssText = 'display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:0.5px solid var(--border)';
+  const box = document.createElement('div');
+  box.style.cssText = 'width:16px;height:16px;border-radius:4px;border:0.5px solid '+(t.done?'#8BB089':'var(--border2)')+';background:'+(t.done?'#D9EAD3':'transparent')+';flex-shrink:0;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s';
+  if(t.done) box.innerHTML = '<svg width="10" height="10" viewBox="0 0 10 10"><polyline points="2,5 4.5,7.5 8,3" stroke="#3A6630" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>';
+  box.addEventListener('click', ()=>toggleTask(t.id));
+  const span = document.createElement('span');
+  span.style.cssText = 'flex:1;font-size:12px;line-height:1.4;color:'+(t.done?'var(--text3)':'var(--text)')+';text-decoration:'+(t.done?'line-through':'none');
+  span.textContent = t.title;
+  const btn = document.createElement('button');
+  btn.style.cssText = 'background:transparent;border:none;color:var(--text3);cursor:pointer;font-size:13px;padding:0 2px;line-height:1;flex-shrink:0';
+  btn.textContent = '×';
+  btn.addEventListener('click', ()=>deleteTask(t.id));
+  div.append(box, span, btn);
+  return div;
+}
+
 function renderTasks(){
   const tasks=state.tasks||[];
-  const taskRow=t=>{
-    const div = document.createElement('div');
-    div.style.cssText = 'display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:0.5px solid var(--border)';
-    const box = document.createElement('div');
-    box.style.cssText = 'width:16px;height:16px;border-radius:4px;border:0.5px solid '+(t.done?'#8BB089':'var(--border2)')+';background:'+(t.done?'#D9EAD3':'transparent')+';flex-shrink:0;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s';
-    if(t.done) box.innerHTML = '<svg width="10" height="10" viewBox="0 0 10 10"><polyline points="2,5 4.5,7.5 8,3" stroke="#3A6630" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>';
-    box.addEventListener('click', ()=>toggleTask(t.id));
-    const span = document.createElement('span');
-    span.style.cssText = 'flex:1;font-size:12px;line-height:1.4;color:'+(t.done?'var(--text3)':'var(--text)')+';text-decoration:'+(t.done?'line-through':'none');
-    span.textContent = t.title;
-    const btn = document.createElement('button');
-    btn.style.cssText = 'background:transparent;border:none;color:var(--text3);cursor:pointer;font-size:13px;padding:0 2px;line-height:1;flex-shrink:0';
-    btn.textContent = '×';
-    btn.addEventListener('click', ()=>deleteTask(t.id));
-    div.append(box, span, btn);
-    return div;
-  };
+  // taskRow is defined as global function below
 
   // Render each category
   TASK_CATEGORIES.forEach(cat=>{
@@ -3561,6 +3564,24 @@ function toggleDoneTasks(){
   if(arrow) arrow.textContent = open ? '▲' : '▼';
 }
 
+function taskRow(t){
+  const div = document.createElement('div');
+  div.style.cssText = 'display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:0.5px solid var(--border)';
+  const box = document.createElement('div');
+  box.style.cssText = 'width:16px;height:16px;border-radius:4px;border:0.5px solid '+(t.done?'#8BB089':'var(--border2)')+';background:'+(t.done?'#D9EAD3':'transparent')+';flex-shrink:0;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s';
+  if(t.done) box.innerHTML = '<svg width="10" height="10" viewBox="0 0 10 10"><polyline points="2,5 4.5,7.5 8,3" stroke="#3A6630" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>';
+  box.addEventListener('click', ()=>toggleTask(t.id));
+  const span = document.createElement('span');
+  span.style.cssText = 'flex:1;font-size:12px;line-height:1.4;color:'+(t.done?'var(--text3)':'var(--text)')+';text-decoration:'+(t.done?'line-through':'none');
+  span.textContent = t.title;
+  const btn = document.createElement('button');
+  btn.style.cssText = 'background:transparent;border:none;color:var(--text3);cursor:pointer;font-size:13px;padding:0 2px;line-height:1;flex-shrink:0';
+  btn.textContent = '×';
+  btn.addEventListener('click', ()=>deleteTask(t.id));
+  div.append(box, span, btn);
+  return div;
+}
+
 function renderTasks(){
   const tasks = state.tasks||[];
   const pending = tasks.filter(t=>!t.done);
@@ -3612,6 +3633,7 @@ try{setKer('');}catch(e){}
 loadCustomFoods();
 renderMetrics(); renderFoodList(); renderVitamins(); renderDailyProgress(); renderWater(); renderWeekCal(); renderRightCol(); renderMiniCals(); renderDailyProgress(); updateDateDisplay(); renderWeekRings();
 syncFromSheets();
+
 
 
 
