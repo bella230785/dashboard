@@ -982,8 +982,6 @@ function renderOutrosRight(){
 
 
 
-
-
 // ── ALL EXISTING JS (foods, state, vitamins, etc.) will be injected here ──
 
 // ── FOOD DATABASE ────────────────────────────────────────────────────────────
@@ -3214,114 +3212,300 @@ function renderWeekRings(){
 }
 
 // ── TAREFAS ───────────────────────────────────────────────────────────────────
-const TASK_CATS = [
-  {id:'fds-casa',   emoji:'🏠', label:'fds / casa'},
-  {id:'fds-org',    emoji:'📦', label:'fds / organizar'},
-  {id:'self-care',  emoji:'🌸', label:'self-care'},
-  {id:'marmita',    emoji:'🥗', label:'prep marmita'},
-  {id:'night-prep', emoji:'🌙', label:'night prep'},
-  {id:'tommy',      emoji:'🐶', label:'tommy'},
-  {id:'bibi',       emoji:'🐱', label:'bibi'},
+const TASK_CATEGORIES = [
+  {id:'fds-casa',   label:'fds / casa',     emoji:'🏠'},
+  {id:'fds-org',    label:'fds / organizar', emoji:'📦'},
+  {id:'self-care',  label:'self-care',        emoji:'🌸'},
+  {id:'marmita',    label:'prep marmita',     emoji:'🥗'},
+  {id:'night-prep', label:'night prep',       emoji:'🌙'},
+  {id:'tommy',      label:'tommy',            emoji:'🐶'},
+  {id:'bibi',       label:'bibi',             emoji:'🐱'},
 ];
 
 function initTasks(){
-  if(!state.tasks) state.tasks = [];
+  if(!state.tasks) state.tasks=[];
   renderTasks();
+  loadTasksFromSheets();
 }
 
-function addTask(catId){
-  var inp = document.getElementById('task-input-' + catId);
-  if(!inp) return;
-  var title = inp.value.trim();
+async function loadTasksFromSheets(){
+  if(!state.sheetsUrl) return;
+  try{
+    const res = await fetch(state.sheetsUrl+'?sheet=tasks');
+    if(!res.ok) return;
+    const rows = await res.json();
+    if(!Array.isArray(rows)) return;
+    const remote = rows.filter(r=>r.id).map(r=>({
+      id:r.id, title:r.title||'', category:r.category||'',
+      done:r.done==='1'||r.done===1||r.done===true,
+      createdAt:r.createdAt||'', doneAt:r.doneAt||'',
+    }));
+    const byId={};
+    (state.tasks||[]).forEach(t=>byId[t.id]=t);
+    remote.forEach(t=>byId[t.id]=t);
+    state.tasks=Object.values(byId).sort((a,b)=>(b.createdAt||'').localeCompare(a.createdAt||''));
+    persist();
+    renderTasks();
+  }catch(e){ console.warn('tasks sync error:',e); }
+}
+
+async function pushTaskToSheets(task){
+  if(!state.sheetsUrl) return;
+  const base=state.sheetsUrl, headers={'Content-Type':'application/json'};
+  try{ await fetch(`${base}/id/${task.id}?sheet=tasks`,{method:'DELETE'}); }catch(e){}
+  await new Promise(r=>setTimeout(r,200));
+  await fetch(`${base}?sheet=tasks`,{method:'POST',headers,body:JSON.stringify({data:{...task,done:task.done?1:0}})});
+}
+
+async function addTask(categoryId){
+  const input=document.getElementById('task-input-'+categoryId);
+  const title=(input?.value||'').trim();
   if(!title) return;
-  inp.value = '';
-  state.tasks.push({id: String(Date.now()), title: title, cat: catId, done: false});
+  const task={
+    id:Date.now().toString(), title, category:categoryId,
+    done:false, createdAt:new Date().toISOString().slice(0,19), doneAt:'',
+  };
+  if(!state.tasks) state.tasks=[];
+  state.tasks.unshift(task);
   persist();
+  if(input) input.value='';
   renderTasks();
+  await pushTaskToSheets(task);
 }
 
-function toggleTask(id){
-  var tasks = state.tasks || [];
-  for(var i=0;i<tasks.length;i++){
-    if(tasks[i].id === id){ tasks[i].done = !tasks[i].done; break; }
-  }
-  persist();
-  renderTasks();
+async function toggleTask(id){
+  const task=state.tasks.find(t=>t.id===id);
+  if(!task) return;
+  task.done=!task.done;
+  task.doneAt=task.done?new Date().toISOString().slice(0,19):'';
+  persist(); renderTasks();
+  await pushTaskToSheets(task);
 }
 
-function deleteTask(id){
-  state.tasks = (state.tasks||[]).filter(function(x){ return x.id !== id; });
-  persist();
-  renderTasks();
+async function deleteTask(id){
+  state.tasks=state.tasks.filter(t=>t.id!==id);
+  persist(); renderTasks();
+  if(!state.sheetsUrl) return;
+  try{ await fetch(`${state.sheetsUrl}/id/${id}?sheet=tasks`,{method:'DELETE'}); }catch(e){}
 }
 
 function toggleDoneTasks(){
-  var el = document.getElementById('tasks-done');
-  var ar = document.getElementById('done-arrow');
+  const el=document.getElementById('tasks-done');
+  const arrow=document.getElementById('done-arrow');
   if(!el) return;
-  var open = el.style.display === 'none';
-  el.style.display = open ? 'block' : 'none';
-  if(ar) ar.textContent = open ? '▲' : '▼';
+  const open=el.style.display==='none';
+  el.style.display=open?'block':'none';
+  if(arrow) arrow.textContent=open?'▲':'▼';
 }
 
-function makeTaskEl(t){
-  var row = document.createElement('div');
-  row.style.cssText = 'display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid #f0efeb';
-
-  var box = document.createElement('div');
-  box.style.cssText = t.done
-    ? 'width:15px;height:15px;border-radius:3px;border:1px solid #8BB089;background:#D9EAD3;cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:10px;color:#3A6630'
-    : 'width:15px;height:15px;border-radius:3px;border:1px solid #ccc;cursor:pointer;flex-shrink:0';
-  if(t.done) box.textContent = '✓';
-  box.onclick = (function(id){ return function(){ toggleTask(id); }; })(t.id);
-
-  var span = document.createElement('span');
-  span.style.cssText = t.done
-    ? 'flex:1;font-size:12px;color:#bbb;text-decoration:line-through'
-    : 'flex:1;font-size:12px;color:#3D3B38';
-  span.textContent = t.title;
-
-  var del = document.createElement('span');
-  del.style.cssText = 'cursor:pointer;color:#ccc;font-size:14px;padding:0 2px;flex-shrink:0';
-  del.textContent = '×';
-  del.onclick = (function(id){ return function(){ deleteTask(id); }; })(t.id);
-
-  row.appendChild(box);
-  row.appendChild(span);
-  row.appendChild(del);
-  return row;
+function taskRow(t){
+  var boxStyle = t.done
+    ? 'width:16px;height:16px;border-radius:4px;border:0.5px solid #8BB089;background:#D9EAD3;flex-shrink:0;cursor:pointer;display:flex;align-items:center;justify-content:center'
+    : 'width:16px;height:16px;border-radius:4px;border:0.5px solid #ccc;background:transparent;flex-shrink:0;cursor:pointer;display:flex;align-items:center;justify-content:center';
+  var check = t.done ? '&#10003;' : '';
+  var txtStyle = t.done
+    ? 'flex:1;font-size:12px;color:#aaa;text-decoration:line-through;line-height:1.4'
+    : 'flex:1;font-size:12px;color:#3D3B38;line-height:1.4';
+  var id = t.id;
+  return '<div style="display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid #f0efeb">'
+    + '<div onclick="toggleTask(&quot;' + id + '&quot;)" style="' + boxStyle + '">' + check + '</div>'
+    + '<span style="' + txtStyle + '">' + t.title + '</span>'
+    + '<button onclick="deleteTask(&quot;' + id + '&quot;)" style="background:none;border:none;cursor:pointer;color:#aaa;font-size:14px">&#215;</button>'
+    + '</div>';
 }
 
 function renderTasks(){
   var tasks = state.tasks || [];
-  TASK_CATS.forEach(function(cat){
+  TASK_CATEGORIES.forEach(function(cat){
     var el = document.getElementById('tasks-cat-' + cat.id);
     if(!el) return;
-    var items = tasks.filter(function(t){ return t.cat === cat.id && !t.done; });
-    var cnt = document.getElementById('tasks-count-' + cat.id);
-    if(cnt) cnt.textContent = items.length || '';
-    el.innerHTML = '';
-    if(items.length === 0){
-      var p = document.createElement('p');
-      p.style.cssText = 'font-size:11px;color:#bbb;margin:4px 0';
-      p.textContent = 'vazia';
-      el.appendChild(p);
-    } else {
-      items.forEach(function(t){ el.appendChild(makeTaskEl(t)); });
-    }
+    var pending = tasks.filter(function(t){ return t.category === cat.id && !t.done; });
+    var countEl = document.getElementById('tasks-count-' + cat.id);
+    if(countEl) countEl.textContent = pending.length ? pending.length + (pending.length > 1 ? ' pendentes' : ' pendente') : '';
+    el.innerHTML = pending.length ? pending.map(taskRow).join('') : '<p style="font-size:11px;color:#aaa;padding:4px 0;margin:0">nenhuma \u2713</p>';
   });
 
   var doneEl = document.getElementById('tasks-done');
   if(doneEl){
-    var done = tasks.filter(function(t){ return t.done; });
-    doneEl.innerHTML = '';
-    if(done.length === 0){
-      doneEl.innerHTML = '<p style="font-size:11px;color:#bbb;margin:4px 0">nenhuma concluída</p>';
-    } else {
-      done.forEach(function(t){ doneEl.appendChild(makeTaskEl(t)); });
-    }
+    var allDone = tasks.filter(function(t){ return t.done; });
+    doneEl.innerHTML = allDone.length ? allDone.map(taskRow).join('') : '<p style="font-size:11px;color:#aaa;margin:0">nenhuma tarefa conclu\u00edda</p>';
+  }
+
+  var summary = document.getElementById('tasks-summary');
+  if(summary){
+    var total = tasks.length;
+    var pend = tasks.filter(function(t){ return !t.done; }).length;
+    var done = tasks.filter(function(t){ return t.done; }).length;
+    summary.innerHTML = '<div style="padding:7px 0;border-bottom:1px solid #f0efeb"><div style="font-size:10px;color:#aaa;margin-bottom:2px">pendentes</div><div style="font-size:24px;font-weight:500">' + pend + '</div></div>'
+      + '<div style="padding:7px 0;border-bottom:1px solid #f0efeb"><div style="font-size:10px;color:#aaa;margin-bottom:2px">conclu\u00eddas</div><div style="font-size:24px;font-weight:500;color:#aaa">' + done + '</div></div>'
+      + '<div style="padding:7px 0"><div style="font-size:10px;color:#aaa;margin-bottom:2px">total</div><div style="font-size:24px;font-weight:500;color:#888">' + total + '</div></div>';
   }
 }
+
+
+function initTasks(){
+  if(!state.tasks) state.tasks = [];
+  renderTasks();
+  loadTasksFromSheets();
+}
+
+async function loadTasksFromSheets(){
+  const url = TASKS_SHEET_URL();
+  if(!url) return;
+  try{
+    const res = await fetch(url);
+    if(!res.ok) return;
+    const rows = await res.json();
+    if(!Array.isArray(rows)) return;
+    // Merge: remote wins for same id
+    const remote = rows.filter(r=>r.id).map(r=>({
+      id: r.id,
+      title: r.title||'',
+      done: r.done==='1'||r.done===1||r.done===true,
+      createdAt: r.createdAt||'',
+      doneAt: r.doneAt||'',
+    }));
+    const localById = {};
+    (state.tasks||[]).forEach(t=>localById[t.id]=t);
+    remote.forEach(t=>localById[t.id]=t);
+    state.tasks = Object.values(localById).sort((a,b)=>b.createdAt.localeCompare(a.createdAt));
+    persist();
+    renderTasks();
+  } catch(e){ console.warn('tasks sync error:', e); }
+}
+
+async function pushTaskToSheets(task){
+  const url = TASKS_SHEET_URL();
+  if(!url) return;
+  const baseUrl = state.sheetsUrl;
+  const headers = {'Content-Type':'application/json'};
+  const entry = {...task, done: task.done?1:0};
+  // Delete old row first
+  try{ await fetch(`${baseUrl}/id/${task.id}?sheet=tasks`, {method:'DELETE'}); } catch(e){}
+  await new Promise(r=>setTimeout(r,200));
+  await fetch(`${baseUrl}?sheet=tasks`, {method:'POST', headers, body:JSON.stringify({data:entry})});
+}
+
+
+async function toggleTask(id){
+  const task = state.tasks.find(t=>t.id===id);
+  if(!task) return;
+  task.done = !task.done;
+  task.doneAt = task.done ? new Date().toISOString().slice(0,19) : '';
+  persist();
+  renderTasks();
+  await pushTaskToSheets(task);
+}
+
+async function deleteTask(id){
+  state.tasks = state.tasks.filter(t=>t.id!==id);
+  persist();
+  renderTasks();
+  const baseUrl = state.sheetsUrl;
+  if(baseUrl){
+    try{ await fetch(`${baseUrl}/id/${id}?sheet=tasks`, {method:'DELETE'}); }catch(e){}
+  }
+}
+
+function toggleDoneTasks(){
+  const el = document.getElementById('tasks-done');
+  const arrow = document.getElementById('done-arrow');
+  if(!el) return;
+  const open = el.style.display === 'none';
+  el.style.display = open ? 'block' : 'none';
+  if(arrow) arrow.textContent = open ? '▲' : '▼';
+}
+
+function taskRow(t){
+  const div = document.createElement('div');
+  div.style.cssText = 'display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:0.5px solid var(--border)';
+  const box = document.createElement('div');
+  box.style.cssText = 'width:16px;height:16px;border-radius:4px;border:0.5px solid '+(t.done?'#8BB089':'var(--border2)')+';background:'+(t.done?'#D9EAD3':'transparent')+';flex-shrink:0;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s';
+  if(t.done) box.innerHTML = '<svg width="10" height="10" viewBox="0 0 10 10"><polyline points="2,5 4.5,7.5 8,3" stroke="#3A6630" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>';
+  box.addEventListener('click', ()=>toggleTask(t.id));
+  const span = document.createElement('span');
+  span.style.cssText = 'flex:1;font-size:12px;line-height:1.4;color:'+(t.done?'var(--text3)':'var(--text)')+';text-decoration:'+(t.done?'line-through':'none');
+  span.textContent = t.title;
+  const btn = document.createElement('button');
+  btn.style.cssText = 'background:transparent;border:none;color:var(--text3);cursor:pointer;font-size:13px;padding:0 2px;line-height:1;flex-shrink:0';
+  btn.textContent = '×';
+  btn.addEventListener('click', ()=>deleteTask(t.id));
+  div.append(box, span, btn);
+  return div;
+}
+
+function renderTasks(){
+  const tasks = state.tasks||[];
+  const pending = tasks.filter(t=>!t.done);
+  const done    = tasks.filter(t=>t.done);
+
+  // Summary
+  const summary = document.getElementById('tasks-summary');
+  if(summary) summary.innerHTML = `
+    <div style="padding:8px 0;border-bottom:0.5px solid var(--border)">
+      <div style="font-size:10px;color:var(--text3);margin-bottom:2px">pendentes</div>
+      <div style="font-size:28px;font-weight:500;color:var(--text);line-height:1">${pending.length}</div>
+    </div>
+    <div style="padding:8px 0;border-bottom:0.5px solid var(--border)">
+      <div style="font-size:10px;color:var(--text3);margin-bottom:2px">concluídas</div>
+      <div style="font-size:28px;font-weight:500;color:var(--text3);line-height:1">${done.length}</div>
+    </div>
+    <div style="padding:8px 0">
+      <div style="font-size:10px;color:var(--text3);margin-bottom:2px">total</div>
+      <div style="font-size:28px;font-weight:500;color:var(--text2);line-height:1">${tasks.length}</div>
+    </div>`;
+
+  const taskRow = (t) => `
+    <div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:0.5px solid var(--border)">
+      <div onclick="toggleTask('${t.id}')" style="width:18px;height:18px;border-radius:5px;border:0.5px solid ${t.done?'var(--green-dk)':'var(--border2)'};background:${t.done?'var(--green)':'transparent'};flex-shrink:0;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s">
+        ${t.done?'<svg width="11" height="11" viewBox="0 0 11 11"><polyline points="2,5.5 4.5,8 9,3" stroke="#3A6630" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>':''}
+      </div>
+      <span style="flex:1;font-size:13px;color:${t.done?'var(--text3)':'var(--text)'};text-decoration:${t.done?'line-through':'none'}">${t.title}</span>
+      <button onclick="deleteTask('${t.id}')" style="background:transparent;border:none;color:var(--text3);cursor:pointer;font-size:14px;padding:0 4px;line-height:1">×</button>
+    </div>`;
+
+  const pendingEl = document.getElementById('tasks-pending');
+  if(pendingEl) pendingEl.innerHTML = pending.length
+    ? pending.map(taskRow).join('')
+    : '<p style="font-size:12px;color:var(--text3);padding:8px 0">nenhuma tarefa pendente 🎉</p>';
+
+  const doneEl = document.getElementById('tasks-done');
+  if(doneEl) doneEl.innerHTML = done.length
+    ? done.map(taskRow).join('')
+    : '<p style="font-size:12px;color:var(--text3)">nenhuma tarefa concluída</p>';
+}
+
+load(); initCurrentMonth(); setDate();
+const _adEl=document.getElementById('active-date');
+if(_adEl) _adEl.value=todayKey();
+// Clear fields for fresh day
+['e-sleep','e-kg','e-notes'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+const _exEl=document.getElementById('e-ex');if(_exEl)_exEl.value='';
+try{setKer('');}catch(e){}
+loadCustomFoods();
+renderMetrics(); renderFoodList(); renderVitamins(); renderDailyProgress(); renderWater(); renderWeekCal(); renderRightCol(); renderMiniCals(); renderDailyProgress(); updateDateDisplay(); renderWeekRings();
+syncFromSheets();
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
