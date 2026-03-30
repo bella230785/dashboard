@@ -980,6 +980,8 @@ function renderOutrosRight(){
 
 
 
+
+
 // ── ALL EXISTING JS (foods, state, vitamins, etc.) will be injected here ──
 
 // ── FOOD DATABASE ────────────────────────────────────────────────────────────
@@ -3297,199 +3299,49 @@ function toggleDoneTasks(){
 }
 
 function taskRow(t){
-  const div = document.createElement('div');
-  div.style.cssText = 'display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:0.5px solid var(--border)';
-  const box = document.createElement('div');
-  box.style.cssText = 'width:16px;height:16px;border-radius:4px;border:0.5px solid '+(t.done?'#8BB089':'var(--border2)')+';background:'+(t.done?'#D9EAD3':'transparent')+';flex-shrink:0;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s';
-  if(t.done) box.innerHTML = '<svg width="10" height="10" viewBox="0 0 10 10"><polyline points="2,5 4.5,7.5 8,3" stroke="#3A6630" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>';
-  box.addEventListener('click', ()=>toggleTask(t.id));
-  const span = document.createElement('span');
-  span.style.cssText = 'flex:1;font-size:12px;line-height:1.4;color:'+(t.done?'var(--text3)':'var(--text)')+';text-decoration:'+(t.done?'line-through':'none');
-  span.textContent = t.title;
-  const btn = document.createElement('button');
-  btn.style.cssText = 'background:transparent;border:none;color:var(--text3);cursor:pointer;font-size:13px;padding:0 2px;line-height:1;flex-shrink:0';
-  btn.textContent = '×';
-  btn.addEventListener('click', ()=>deleteTask(t.id));
-  div.append(box, span, btn);
-  return div;
+  var boxStyle = t.done
+    ? 'width:16px;height:16px;border-radius:4px;border:0.5px solid #8BB089;background:#D9EAD3;flex-shrink:0;cursor:pointer;display:flex;align-items:center;justify-content:center'
+    : 'width:16px;height:16px;border-radius:4px;border:0.5px solid #ccc;background:transparent;flex-shrink:0;cursor:pointer;display:flex;align-items:center;justify-content:center';
+  var check = t.done ? '&#10003;' : '';
+  var txtStyle = t.done
+    ? 'flex:1;font-size:12px;color:#aaa;text-decoration:line-through;line-height:1.4'
+    : 'flex:1;font-size:12px;color:#3D3B38;line-height:1.4';
+  var id = t.id;
+  return '<div style="display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid #f0efeb">'
+    + '<div onclick="toggleTask(&quot;' + id + '&quot;)" style="' + boxStyle + '">' + check + '</div>'
+    + '<span style="' + txtStyle + '">' + t.title + '</span>'
+    + '<button onclick="deleteTask(&quot;' + id + '&quot;)" style="background:none;border:none;cursor:pointer;color:#aaa;font-size:14px">&#215;</button>'
+    + '</div>';
 }
 
 function renderTasks(){
-  const tasks=state.tasks||[];
-  // taskRow is defined as global function below
-
-  // Render each category
-  TASK_CATEGORIES.forEach(cat=>{
-    const el=document.getElementById('tasks-cat-'+cat.id);
-    const countEl=document.getElementById('tasks-count-'+cat.id);
-    const catTasks=tasks.filter(t=>t.category===cat.id);
-    const pending=catTasks.filter(t=>!t.done);
-    const done=catTasks.filter(t=>t.done);
-    if(countEl) countEl.textContent=pending.length?pending.length+' pendente'+(pending.length>1?'s':''):'';
-    if(el){
-      el.innerHTML='';
-      if(pending.length){ pending.forEach(t=>el.appendChild(taskRow(t))); }
-      else { el.innerHTML='<p style="font-size:11px;color:var(--text3);padding:4px 0">nenhuma ✓</p>'; }
-    }
+  var tasks = state.tasks || [];
+  TASK_CATEGORIES.forEach(function(cat){
+    var el = document.getElementById('tasks-cat-' + cat.id);
+    if(!el) return;
+    var pending = tasks.filter(function(t){ return t.category === cat.id && !t.done; });
+    var countEl = document.getElementById('tasks-count-' + cat.id);
+    if(countEl) countEl.textContent = pending.length ? pending.length + (pending.length > 1 ? ' pendentes' : ' pendente') : '';
+    el.innerHTML = pending.length ? pending.map(taskRow).join('') : '<p style="font-size:11px;color:#aaa;padding:4px 0;margin:0">nenhuma \u2713</p>';
   });
 
-  // Concluídas (all categories)
-  const doneEl=document.getElementById('tasks-done');
-  const allDone=tasks.filter(t=>t.done).sort((a,b)=>(b.doneAt||'').localeCompare(a.doneAt||''));
+  var doneEl = document.getElementById('tasks-done');
   if(doneEl){
-    doneEl.innerHTML='';
-    if(allDone.length){ allDone.forEach(t=>doneEl.appendChild(taskRow(t))); }
-    else { doneEl.innerHTML='<p style="font-size:11px;color:var(--text3)">nenhuma tarefa concluída</p>'; }
+    var allDone = tasks.filter(function(t){ return t.done; });
+    doneEl.innerHTML = allDone.length ? allDone.map(taskRow).join('') : '<p style="font-size:11px;color:#aaa;margin:0">nenhuma tarefa conclu\u00edda</p>';
   }
 
-  // Summary
-  const summary=document.getElementById('tasks-summary');
-  const total=tasks.length, pending=tasks.filter(t=>!t.done).length, done=tasks.filter(t=>t.done).length;
-  if(summary) summary.innerHTML=`
-    <div style="padding:7px 0;border-bottom:0.5px solid var(--border)"><div style="font-size:10px;color:var(--text3);margin-bottom:2px">pendentes</div><div style="font-size:24px;font-weight:500;color:var(--text);line-height:1">${pending}</div></div>
-    <div style="padding:7px 0;border-bottom:0.5px solid var(--border)"><div style="font-size:10px;color:var(--text3);margin-bottom:2px">concluídas</div><div style="font-size:24px;font-weight:500;color:var(--text3);line-height:1">${done}</div></div>
-    <div style="padding:7px 0"><div style="font-size:10px;color:var(--text3);margin-bottom:2px">total</div><div style="font-size:24px;font-weight:500;color:var(--text2);line-height:1">${total}</div></div>`;
-}
-
-// ── BIOIMPEDÂNCIA ─────────────────────────────────────────────────────────────
-
-// ── WEEKLY RINGS ─────────────────────────────────────────────────────────────
-function renderWeekRings(){
-  const canvas = document.getElementById('weekRingsChart');
-  const legend = document.getElementById('week-rings-legend');
-  if(!canvas) return;
-
-  // Get this week's days
-  const today = todayKey();
-  const parts = today.split('-').map(Number);
-  const ref = new Date(parts[0], parts[1]-1, parts[2]);
-  const dow = ref.getDay();
-  const mon = new Date(ref);
-  mon.setDate(ref.getDate() - (dow === 0 ? 6 : dow - 1));
-
-  const weekDays = Array.from({length:7}, (_,i) => {
-    const d = new Date(mon);
-    d.setDate(mon.getDate() + i);
-    return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
-  }).filter(d => d <= today);
-
-  const totalDays = weekDays.length;
-  if(totalDays === 0) return;
-
-  // Collect data
-  const rings = [
-    {
-      label: 'água',
-      color: '#7A9BC8',
-      track: '#E0EAF5',
-      count: weekDays.filter(d => {
-        const day = state.days.find(s => s.date === d);
-        const isToday = d === today;
-        const water = isToday ? state.waterChecks * 500 : (day?.water || 0);
-        return water >= (state.goals.water || 2000);
-      }).length,
-    },
-    {
-      label: 'vitaminas',
-      color: '#8BB089',
-      track: '#E0EDD9',
-      count: weekDays.filter(d => {
-        const day = state.days.find(s => s.date === d);
-        const isToday = d === today;
-        if(isToday){
-          const vitKeys = ['0-0','0-1','0-2','1-1','2-0','2-1','2-2'];
-          return vitKeys.filter(k => state.vit[k]).length >= 5;
-        }
-        return day && (day.poly + day.nourkrin + day.vitaD + day.ferro + day.minoxidil) >= 4;
-      }).length,
-    },
-    {
-      label: 'exercício',
-      color: '#C8A878',
-      track: '#F0E8DC',
-      count: weekDays.filter(d => {
-        const day = state.days.find(s => s.date === d);
-        const isToday = d === today;
-        const ex = isToday ? (state.exToday || document.getElementById('e-ex')?.value || '') : (day?.ex || '');
-        return ex && String(ex).trim() && String(ex).trim() !== '0';
-      }).length,
-    },
-  ];
-
-  // Draw concentric rings using Canvas 2D
-  const ctx = canvas.getContext('2d');
-  const dpr = window.devicePixelRatio || 1;
-  const size = 180;
-  canvas.width  = size * dpr;
-  canvas.height = size * dpr;
-  canvas.style.width  = size + 'px';
-  canvas.style.height = size + 'px';
-  ctx.scale(dpr, dpr);
-
-  const cx = size / 2;
-  const cy = size / 2;
-  const ringW = 14;
-  const gap   = 6;
-  const radii = [72, 72 - ringW - gap, 72 - (ringW + gap) * 2];
-
-  ctx.clearRect(0, 0, size, size);
-
-  rings.forEach((ring, i) => {
-    const r   = radii[i];
-    const pct = Math.min(ring.count / totalDays, 1);
-    const startAngle = -Math.PI / 2;
-    const endAngle   = startAngle + 2 * Math.PI * pct;
-
-    // Track (background)
-    ctx.beginPath();
-    ctx.arc(cx, cy, r, 0, 2 * Math.PI);
-    ctx.strokeStyle = ring.track;
-    ctx.lineWidth   = ringW;
-    ctx.lineCap     = 'round';
-    ctx.stroke();
-
-    // Fill
-    if(pct > 0){
-      ctx.beginPath();
-      ctx.arc(cx, cy, r, startAngle, endAngle);
-      ctx.strokeStyle = ring.color;
-      ctx.lineWidth   = ringW;
-      ctx.lineCap     = 'round';
-      ctx.stroke();
-    }
-
-    ring.pct = Math.round(pct * 100);
-  });
-
-  // Center text — overall average
-  const avg = Math.round(rings.reduce((s,r) => s + r.pct, 0) / rings.length);
-  ctx.textAlign = 'center';
-  ctx.textBaseline = 'middle';
-  ctx.fillStyle = '#3D3B38';
-  ctx.font = 'bold 24px Schibsted Grotesk, sans-serif';
-  ctx.fillText(avg + '%', cx, cy - 6);
-  ctx.font = '11px Schibsted Grotesk, sans-serif';
-  ctx.fillStyle = '#A8A79F';
-  ctx.fillText('da semana', cx, cy + 14);
-
-  // Legend
-  if(legend){
-    legend.innerHTML = rings.map(r => `
-      <div style="display:flex;align-items:center;justify-content:space-between">
-        <div style="display:flex;align-items:center;gap:7px">
-          <div style="width:10px;height:10px;border-radius:50%;background:${r.color};flex-shrink:0"></div>
-          <span style="font-size:11px;color:var(--text2)">${r.label}</span>
-        </div>
-        <div style="display:flex;align-items:center;gap:6px">
-          <span style="font-size:11px;color:var(--text3)">${r.count}/${totalDays} dias</span>
-          <span style="font-size:12px;font-weight:500;color:var(--text)">${r.pct}%</span>
-        </div>
-      </div>`).join('');
+  var summary = document.getElementById('tasks-summary');
+  if(summary){
+    var total = tasks.length;
+    var pend = tasks.filter(function(t){ return !t.done; }).length;
+    var done = tasks.filter(function(t){ return t.done; }).length;
+    summary.innerHTML = '<div style="padding:7px 0;border-bottom:1px solid #f0efeb"><div style="font-size:10px;color:#aaa;margin-bottom:2px">pendentes</div><div style="font-size:24px;font-weight:500">' + pend + '</div></div>'
+      + '<div style="padding:7px 0;border-bottom:1px solid #f0efeb"><div style="font-size:10px;color:#aaa;margin-bottom:2px">conclu\u00eddas</div><div style="font-size:24px;font-weight:500;color:#aaa">' + done + '</div></div>'
+      + '<div style="padding:7px 0"><div style="font-size:10px;color:#aaa;margin-bottom:2px">total</div><div style="font-size:24px;font-weight:500;color:#888">' + total + '</div></div>';
   }
 }
 
-// ── TAREFAS ───────────────────────────────────────────────────────────────────
-const TASKS_SHEET_URL = () => state.sheetsUrl ? state.sheetsUrl + '?sheet=tasks' : null;
 
 function initTasks(){
   if(!state.tasks) state.tasks = [];
@@ -3633,6 +3485,8 @@ try{setKer('');}catch(e){}
 loadCustomFoods();
 renderMetrics(); renderFoodList(); renderVitamins(); renderDailyProgress(); renderWater(); renderWeekCal(); renderRightCol(); renderMiniCals(); renderDailyProgress(); updateDateDisplay(); renderWeekRings();
 syncFromSheets();
+
+
 
 
 
