@@ -746,6 +746,106 @@ td { padding:5px 6px; font-size:12px; color:var(--g700); border-bottom:1px solid
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <script>
 
+// ── RENDER STUBS (called by nav/sync) ────────────────────────────────────────
+function renderMetrics(){ 
+  // metrics element exists in HTML, render from state
+  const el = document.getElementById('metrics');
+  if(!el) return;
+  const t = getTotals ? getTotals() : {prot:0,carb:0,fat:0,fib:0,cal:0};
+  const g = state.goals || {};
+  const def = (g.cal||1600) - t.cal;
+  const cols = [
+    {l:'proteína', v:Math.round(t.prot), u:'g', goal:g.prot||120, c:'#A8BDD8'},
+    {l:'carbs',    v:Math.round(t.carb), u:'g', goal:g.carbs||150, c:'#A8C4B0'},
+    {l:'gordura',  v:Math.round(t.fat),  u:'g', goal:g.fat||55,   c:'#D4B896'},
+    {l:'fibra',    v:Math.round(t.fib),  u:'g', goal:g.fib||25,   c:'#C0AACF'},
+    {l:'déficit',  v:Math.round(def),    u:'kcal', goal:g.def||400, c:def>=0?'#A8BDD8':'#D4A8A8'},
+  ];
+  el.innerHTML = cols.map(c => {
+    const pct = c.goal ? Math.min(100, Math.round(Math.abs(c.v)/c.goal*100)) : 0;
+    return `<div class="met"><div class="met-lbl">${c.l}</div>
+      <div><span class="met-val">${c.v}</span><span class="met-unit">${c.u}</span></div>
+      <div class="met-bar"><div class="met-fill" style="width:${pct}%;background:${c.c}"></div></div>
+    </div>`;
+  }).join('');
+}
+
+function renderFoodList(){
+  const el = document.getElementById('food-list');
+  if(!el) return;
+  const foods = state.foods || [];
+  if(!foods.length){ el.innerHTML = '<p style="font-size:12px;color:var(--g400);padding:8px 0">nenhum alimento adicionado</p>'; return; }
+  el.innerHTML = foods.map((f,i) => 
+    `<div class="food-list-item">
+      <span style="flex:1">${f.n}</span>
+      <span style="color:var(--g400);font-size:11px">${f.qty}×${f.u} · ${Math.round(f.cal*f.qty)}kcal</span>
+      <button onclick="removeFood(${i})" style="background:none;border:none;color:var(--g300);cursor:pointer;font-size:14px;padding:0 4px">×</button>
+    </div>`
+  ).join('');
+}
+
+function renderVitamins(){
+  const el = document.getElementById('vit-grid');
+  if(!el) return;
+  const VITAMINS_LOCAL = [
+    {time:'08:30', items:['polypodium','norkrin','vita D']},
+    {time:'09:30', items:['vitamina C','ferro']},
+    {time:'11:00', items:['colágeno sachê','minoxidil','magnésio']},
+  ];
+  el.innerHTML = VITAMINS_LOCAL.map((slot,si) => `
+    <div class="vit-slot">
+      <div class="vit-time">${slot.time}</div>
+      ${slot.items.map((item,ii) => {
+        const k = si+'-'+ii;
+        const done = !!(state.vit && state.vit[k]);
+        return `<div class="vit-item" onclick="toggleVit('${k}')">
+          <div class="vit-check ${done?'done':''}">
+            ${done?'<svg width="10" height="10" viewBox="0 0 10 10"><polyline points="2,5 4.5,7.5 8,3" stroke="#4A90E2" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>':''}
+          </div>
+          <span class="vit-name ${done?'done':''}">${item}</span>
+        </div>`;
+      }).join('')}
+    </div>`
+  ).join('');
+}
+
+function renderWater(){
+  const el = document.getElementById('water-checks');
+  const ml = document.getElementById('water-ml');
+  if(!el) return;
+  const labels = ['500ml','1L','1.5L','2L'];
+  const checks = state.waterChecks || 0;
+  el.innerHTML = labels.map((lbl,i) => `
+    <div style="display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer" onclick="toggleWater(${i})">
+      <div style="width:36px;height:36px;border-radius:10px;border:1px solid ${i<checks?'var(--accent)':'var(--g150)'};background:${i<checks?'var(--accent-l)':'transparent'};display:flex;align-items:center;justify-content:center;transition:all .2s">
+        ${i<checks?'<svg width="14" height="14" viewBox="0 0 16 16" fill="none"><polyline points="3,8 6,12 13,4" stroke="#4A90E2" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>':'<svg width="12" height="12" viewBox="0 0 14 14" fill="none"><path d="M7 2 C7 2 3 6 3 9 a4 4 0 0 0 8 0 C11 6 7 2 7 2z" stroke="#BBBBBB" stroke-width="1" fill="none"/></svg>'}
+      </div>
+      <span style="font-size:10px;color:var(--g400)">${lbl}</span>
+    </div>`
+  ).join('');
+  if(ml) ml.textContent = (checks * 500) + ' ml';
+}
+
+function toggleVit(k){ 
+  if(!state.vit) state.vit = {};
+  state.vit[k] = !state.vit[k]; 
+  persist(); 
+  renderVitamins(); 
+  renderDailyProgress(); 
+}
+
+function toggleWater(i){
+  state.waterChecks = state.waterChecks===i+1 ? i : i+1;
+  persist(); renderWater(); renderDailyProgress();
+}
+
+function removeFood(i){
+  state.foods.splice(i,1);
+  persist(); renderMetrics(); renderFoodList();
+}
+
+
+
 
 
 
@@ -1040,42 +1140,30 @@ function showSyncStatus(s){
 async function syncFromSheets(){
   showSyncStatus('syncing');
   try{
-    const res = await fetch(SB_URL+'/rest/v1/nutrition?select=*&order=date.asc&limit=500', {
-      headers: sbHeaders()
-    });
-    if(!res.ok) throw new Error('HTTP '+res.status);
-    const rows = await res.json();
-    if(!Array.isArray(rows)||!rows.length){ showSyncStatus('ok'); return; }
-
-    const pf = v => parseFloat(String(v||0).replace(',','.')) || 0;
+    const resp = await fetch(SB_URL+'/rest/v1/nutrition?id=eq.1&select=value', {headers: sbHeaders()});
+    if(!resp.ok) throw new Error('HTTP '+resp.status);
+    const rows = await resp.json();
+    if(!rows||!rows.length||!rows[0].value){ showSyncStatus('idle'); return; }
+    
+    const remote = JSON.parse(rows[0].value);
+    
+    // Merge remote days into state
     const merged = {};
     state.days.forEach(d => merged[d.date] = d);
-    rows.forEach(r => {
-      const dateVal = r.date || '';
-      if(!dateVal || dateVal.length !== 10 || dateVal > todayKey()) return;
-      const foods = (r.foods && r.foods.startsWith('[')) ? (()=>{try{return JSON.parse(r.foods);}catch(e){return[];}})() : [];
-      const entry = {
-        date:dateVal, prot:pf(r.prot), carbs:pf(r.carbs), fat:pf(r.fat),
-        fib:pf(r.fib), cal:pf(r.cal), deficit:pf(r.deficit), water:pf(r.water),
-        sleep:pf(r.sleep), ker:pf(r.ker), ex:r.ex||'', kg:pf(r.kg),
-        poly:pf(r.poly), nourkrin:pf(r.nourkrin), vitaD:pf(r.vitaD),
-        vitC:pf(r.vitC||0), ferro:pf(r.ferro),
-        colageno:pf(r.colageno||r.creatina||0),
-        minoxidil:pf(r.minoxidil), magnesio:pf(r.magnesio),
-        foods:r.foods||'', notes:r.notes||'', _foods:foods,
-      };
-      if(!merged[dateVal] || (entry.cal > 0 && entry.cal >= (merged[dateVal].cal||0))){
-        merged[dateVal] = entry;
-      }
-    });
+    (remote.days||[]).forEach(d => { if(d.date) merged[d.date] = d; });
     state.days = Object.values(merged).sort((a,b) => a.date.localeCompare(b.date));
+    
+    if(remote.goals)       state.goals       = remote.goals;
+    if(remote.bio)         state.bio         = remote.bio;
+    if(remote.treinos)     state.treinos     = remote.treinos;
+    if(remote.customFoods) state.customFoods = remote.customFoods;
     persist();
 
     // Restore today
     const today = todayKey();
     const td = merged[today];
     if(td && td.cal > 0){
-      state.vit = {};
+      state.vit={};
       if(td.poly)      state.vit['0-0']=true;
       if(td.nourkrin)  state.vit['0-1']=true;
       if(td.vitaD)     state.vit['0-2']=true;
@@ -1085,24 +1173,34 @@ async function syncFromSheets(){
       if(td.minoxidil) state.vit['2-1']=true;
       if(td.magnesio)  state.vit['2-2']=true;
       state.waterChecks = td.water ? Math.min(4, Math.round(td.water/500)) : 0;
-      state.foods = td._foods || [];
+      state.foods = td._foods||[];
       setTimeout(()=>{
         const sl=document.getElementById('e-sleep'); if(sl) sl.value=td.sleep||'';
         const kg=document.getElementById('e-kg');    if(kg) kg.value=td.kg||'';
         const ex=document.getElementById('e-ex');    if(ex) ex.value=td.ex||'';
         const no=document.getElementById('e-notes'); if(no) no.value=td.notes||'';
         try{ if(td.ker) setKer(td.ker); }catch(e){}
-      }, 100);
+      }, 150);
     }
 
     renderMetrics(); renderFoodList(); renderVitamins(); renderWater();
-    renderWeekCal(); renderRightCol(); renderMiniCals(); renderDailyProgress(); renderWeekRings();
+    renderWeekCal(); renderRightCol(); renderMiniCals(); renderDailyProgress();
+    if(typeof renderWeekRings==="function") renderWeekRings();
     showSyncStatus('ok');
+  }catch(e){ console.warn('sync error:',e); showSyncStatus('error'); }
+}
 
-  }catch(e){
-    console.warn('sync error:', e);
-    showSyncStatus('error');
-  }
+async function pushToSheets(entry){
+  // Salva estado completo no Supabase
+  try{
+    const snapshot = JSON.stringify(state);
+    await fetch(SB_URL+'/rest/v1/nutrition', {
+      method: 'POST',
+      headers: {...sbHeaders(), 'Prefer': 'resolution=merge-duplicates,return=minimal'},
+      body: JSON.stringify({id: 1, value: snapshot})
+    });
+    showSyncStatus('ok');
+  }catch(e){ console.warn('push error:',e); showSyncStatus('error'); throw e; }
 }
 
 async function saveDay(){
@@ -1145,27 +1243,6 @@ async function saveDay(){
     msg.textContent='salvo';
   }
   setTimeout(()=>msg.textContent='',3000);
-}
-
-
-async function pushToSheets(entry){
-  try{
-    const row = {
-      date:entry.date, prot:entry.prot||0, carbs:entry.carbs||0, fat:entry.fat||0,
-      fib:entry.fib||0, cal:entry.cal||0, deficit:entry.deficit||0, water:entry.water||0,
-      sleep:entry.sleep||0, ker:entry.ker||0, ex:entry.ex||'', kg:entry.kg||0,
-      poly:entry.poly||0, nourkrin:entry.nourkrin||0, vitaD:entry.vitaD||0,
-      ferro:entry.ferro||0, creatina:entry.colageno||entry.creatina||0,
-      minoxidil:entry.minoxidil||0, magnesio:entry.magnesio||0,
-      foods:JSON.stringify(entry._foods||[]), notes:entry.notes||'',
-    };
-    await fetch(SB_URL+'/rest/v1/nutrition', {
-      method: 'POST',
-      headers: {...sbHeaders(), 'Prefer': 'resolution=merge-duplicates,return=minimal'},
-      body: JSON.stringify(row)
-    });
-    showSyncStatus('ok');
-  }catch(e){ console.warn('push error:',e); showSyncStatus('error'); throw e; }
 }
 
 
@@ -2710,6 +2787,7 @@ requestAnimationFrame(function(){
   // Auto sync from Supabase on every load
   syncFromSheets();
 });
+
 
 
 
