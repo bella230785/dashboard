@@ -748,6 +748,7 @@ td { padding:5px 6px; font-size:12px; color:var(--g700); border-bottom:1px solid
 
 
 
+
 function nav(p,btn){
   document.querySelectorAll('.page').forEach(el=>el.classList.remove('on'));
   document.querySelectorAll('.nb').forEach(el=>el.classList.remove('on'));
@@ -970,18 +971,6 @@ function persistRemote(){
   _saveTimer = setTimeout(saveToSupabase, 2000);
 }
 
-async function saveToSupabase(){
-  try{
-    const snapshot = JSON.parse(JSON.stringify(state));
-    await fetch(SUPA_URL+'/rest/v1/nutrition_state',
-      { method:'POST',
-        headers:{ 'apikey':SUPA_KEY,'Authorization':'Bearer '+SUPA_KEY,
-          'Content-Type':'application/json','Prefer':'resolution=merge-duplicates' },
-        body: JSON.stringify({id:1, data: snapshot})
-      }
-    );
-  }catch(e){ console.warn('saveToSupabase error:',e); }
-}
 
 function todayKey(){
   const d=new Date();
@@ -1026,45 +1015,54 @@ function loadCustomFoods(){
 
 
 // ── SYNC FROM SHEETS ─────────────────────────────────────────────────────────
-const SUPA_URL = 'https://tatvymywnvnwrpzyrwey.supabase.co';
-const SUPA_KEY = 'sb_publishable_fQf2wI77du-X_oE4ML77og_Op6W80Ic';
+
+
+const SB_URL = 'https://tatvymywnvnwrpzyrwey.supabase.co';
+const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRhdHZ5bXl3bnZud3Jwenlyd2V5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU0MDk0NjAsImV4cCI6MjA5MDk4NTQ2MH0.YqvTESy8OC7IOPkAnMWQzvBjV5DDx47xNkI3u0ry5f8';
+
+function sbHeaders(){
+  return {
+    'Content-Type': 'application/json',
+    'apikey': SB_KEY,
+    'Authorization': 'Bearer '+SB_KEY,
+  };
+}
+
+function showSyncStatus(s){
+  const el = document.getElementById('sync-indicator');
+  if(!el) return;
+  const map = {syncing:'⟳ sincronizando...', ok:'✓ sincronizado', error:'⚠ erro sync', idle:''};
+  el.textContent = map[s]||'';
+  el.style.opacity = s==='idle'?'0':'1';
+  if(s==='ok') setTimeout(()=>showSyncStatus('idle'), 3000);
+}
 
 async function syncFromSheets(){
+  showSyncStatus('syncing');
   try{
-    // Load daily rows from nutrition table
-    const res = await fetch(
-      SUPA_URL+'/rest/v1/nutrition?select=*&order=date.asc',
-      {headers:{'apikey':SUPA_KEY,'Authorization':'Bearer '+SUPA_KEY}}
-    );
-    if(!res.ok) return;
-    const rows = await res.json();
-    if(!Array.isArray(rows)||!rows.length) return;
-
-    const pf = function(v){ return parseFloat(v)||0; };
+    const resp = await fetch(SB_URL+'/rest/v1/nutrition?id=eq.1&select=value', {headers: sbHeaders()});
+    if(!resp.ok) throw new Error('HTTP '+resp.status);
+    const rows = await resp.json();
+    if(!rows||!rows.length||!rows[0].value){ showSyncStatus('idle'); return; }
+    
+    const remote = JSON.parse(rows[0].value);
+    
+    // Merge remote days into state
     const merged = {};
-    state.days.forEach(function(d){ merged[d.date]=d; });
-    rows.forEach(function(r){
-      if(!r.date||r.date>todayKey()) return;
-      var foods=[];
-      if(r.foods&&r.foods.charAt(0)==='['){try{foods=JSON.parse(r.foods);}catch(e){}}
-      merged[r.date]={
-        date:r.date,prot:pf(r.prot),carbs:pf(r.carbs),fat:pf(r.fat),
-        fib:pf(r.fib),cal:pf(r.cal),deficit:pf(r.deficit),water:pf(r.water),
-        sleep:pf(r.sleep),ker:pf(r.ker),ex:r.ex||'',kg:pf(r.kg),
-        poly:pf(r.poly),nourkrin:pf(r.nourkrin),vitaD:pf(r.vitaD),
-        vitC:pf(r.vitC||0),ferro:pf(r.ferro),
-        colageno:pf(r.colageno||r.creatina||0),
-        minoxidil:pf(r.minoxidil),magnesio:pf(r.magnesio),
-        foods:r.foods||'',notes:r.notes||'',_foods:foods,
-      };
-    });
-    state.days=Object.values(merged).sort(function(a,b){return a.date.localeCompare(b.date);});
+    state.days.forEach(d => merged[d.date] = d);
+    (remote.days||[]).forEach(d => { if(d.date) merged[d.date] = d; });
+    state.days = Object.values(merged).sort((a,b) => a.date.localeCompare(b.date));
+    
+    if(remote.goals)       state.goals       = remote.goals;
+    if(remote.bio)         state.bio         = remote.bio;
+    if(remote.treinos)     state.treinos     = remote.treinos;
+    if(remote.customFoods) state.customFoods = remote.customFoods;
     persist();
 
     // Restore today
-    var today=todayKey();
-    var td=merged[today];
-    if(td&&td.cal>0){
+    const today = todayKey();
+    const td = merged[today];
+    if(td && td.cal > 0){
       state.vit={};
       if(td.poly)      state.vit['0-0']=true;
       if(td.nourkrin)  state.vit['0-1']=true;
@@ -1074,27 +1072,34 @@ async function syncFromSheets(){
       if(td.colageno)  state.vit['2-0']=true;
       if(td.minoxidil) state.vit['2-1']=true;
       if(td.magnesio)  state.vit['2-2']=true;
-      state.waterChecks=td.water?Math.min(4,Math.round(td.water/500)):0;
-      state.foods=td._foods||[];
-      setTimeout(function(){
-        var sl=document.getElementById('e-sleep');if(sl)sl.value=td.sleep||'';
-        var kg=document.getElementById('e-kg');if(kg)kg.value=td.kg||'';
-        var ex=document.getElementById('e-ex');if(ex)ex.value=td.ex||'';
-        var no=document.getElementById('e-notes');if(no)no.value=td.notes||'';
-        try{if(td.ker)setKer(td.ker);}catch(e){}
-      },100);
+      state.waterChecks = td.water ? Math.min(4, Math.round(td.water/500)) : 0;
+      state.foods = td._foods||[];
+      setTimeout(()=>{
+        const sl=document.getElementById('e-sleep'); if(sl) sl.value=td.sleep||'';
+        const kg=document.getElementById('e-kg');    if(kg) kg.value=td.kg||'';
+        const ex=document.getElementById('e-ex');    if(ex) ex.value=td.ex||'';
+        const no=document.getElementById('e-notes'); if(no) no.value=td.notes||'';
+        try{ if(td.ker) setKer(td.ker); }catch(e){}
+      }, 150);
     }
 
-    renderMetrics();renderFoodList();renderVitamins();renderWater();
-    renderWeekCal();renderRightCol();renderMiniCals();renderDailyProgress();renderWeekRings();
+    renderMetrics(); renderFoodList(); renderVitamins(); renderWater();
+    renderWeekCal(); renderRightCol(); renderMiniCals(); renderDailyProgress(); renderWeekRings();
+    showSyncStatus('ok');
+  }catch(e){ console.warn('sync error:',e); showSyncStatus('error'); }
+}
 
-    var ind=document.getElementById('sync-indicator');
-    if(ind){
-      ind.textContent='↑ sincronizado '+new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
-      ind.style.opacity='1';
-      setTimeout(function(){ind.style.opacity='0';},3000);
-    }
-  }catch(e){console.warn('sync error:',e);}
+async function pushToSheets(entry){
+  // Salva estado completo no Supabase
+  try{
+    const snapshot = JSON.stringify(state);
+    await fetch(SB_URL+'/rest/v1/nutrition', {
+      method: 'POST',
+      headers: {...sbHeaders(), 'Prefer': 'resolution=merge-duplicates,return=minimal'},
+      body: JSON.stringify({id: 1, value: snapshot})
+    });
+    showSyncStatus('ok');
+  }catch(e){ console.warn('push error:',e); showSyncStatus('error'); throw e; }
 }
 
 async function saveDay(){
@@ -1151,8 +1156,8 @@ async function saveToSupabase(){
       {
         method: 'POST',
         headers: {
-          'apikey': 'sb_publishable_fQf2wI77du-X_oE4ML77og_Op6W80Ic',
-          'Authorization': 'Bearer sb_publishable_fQf2wI77du-X_oE4ML77og_Op6W80Ic',
+          'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRhdHZ5bXl3bnZud3Jwenlyd2V5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU0MDk0NjAsImV4cCI6MjA5MDk4NTQ2MH0.YqvTESy8OC7IOPkAnMWQzvBjV5DDx47xNkI3u0ry5f8',
+          'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRhdHZ5bXl3bnZud3Jwenlyd2V5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU0MDk0NjAsImV4cCI6MjA5MDk4NTQ2MH0.YqvTESy8OC7IOPkAnMWQzvBjV5DDx47xNkI3u0ry5f8',
           'Content-Type': 'application/json',
           'Prefer': 'resolution=merge-duplicates'
         },
@@ -2681,6 +2686,7 @@ requestAnimationFrame(function(){
   // Auto sync from Supabase on every load
   syncFromSheets();
 });
+
 
 
 
