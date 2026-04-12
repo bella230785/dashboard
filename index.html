@@ -745,6 +745,9 @@ td { padding:5px 6px; font-size:12px; color:var(--g700); border-bottom:1px solid
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <script>
+
+
+
 function nav(p,btn){
   document.querySelectorAll('.page').forEach(el=>el.classList.remove('on'));
   document.querySelectorAll('.nb').forEach(el=>el.classList.remove('on'));
@@ -814,39 +817,6 @@ function renderOutrosRight(){
     <span style="font-size:13px;font-weight:500;color:var(--g800)">${it.v}</span>
   </div>`).join('');
 }
-</script>
-<script>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 // ── ALL EXISTING JS (foods, state, vitamins, etc.) will be injected here ──
 
@@ -986,16 +956,85 @@ let state = {
   goals:{prot:120,carbs:140,fat:55,fib:20,cal:1600,def:400,water:2000},
   days:[{"date": "2026-01-05", "prot": 117.6, "carbs": 0, "fat": 0, "fib": 12.5, "cal": 1452, "deficit": 248, "water": 2000, "sleep": 5.2, "ker": 0, "ex": "", "kg": 61.8, "poly": 0, "nourkrin": 0, "vitaD": 0, "ferro": 0, "creatina": 0, "minoxidil": 0, "magnesio": 0, "foods": "", "notes": ""}, {"date": "2026-01-06", "prot": 86.0, "carbs": 0, "fat": 0, "fib": 3.1, "cal": 816, "deficit": 884, "water": 2000, "sleep": 6.5, "ker": 2, "ex": "40 min", "kg": 61.8, "poly": 0, "nourkrin": 0, "vitaD": 0, "ferro": 0, "creatina": 0, "minoxidil": 0, "magnesio": 0, "foods": "", "notes": ""}, {"date": "2026-01-07", "prot": 132.9, "carbs": 0, "fat": 0, "fib": 15.0, "cal": 1462, "deficit": 238, "water": 2000, "sleep": 6.2, "ker": 0, "ex": "45 min", "kg": 61.2, "poly": 0, "nourkrin": 0, "vitaD": 0, "ferro": 0, "creatina": 0, "minoxidil": 0, "magnesio": 0, "foods": "", "notes": ""}, {"date": "2026-01-08", "prot": 96.5, "carbs": 0, "fat": 0, "fib": 4.4, "cal": 1350, "deficit": 350, "water": 2000, "sleep": 4.9, "ker": 0, "ex": "", "kg": 61.2, "poly": 0, "nourkrin": 0, "vitaD": 0, "ferro": 0, "creatina": 0, "minoxidil": 0, "magnesio": 0, "foods": "", "notes": ""}, {"date": "2026-01-09", "prot": 93.8, "carbs": 0, "fat": 0, "fib": 12.4, "cal": 1528, "deficit": 172, "water": 2000, "sleep": 7.0, "ker": 3, "ex": "", "kg": 61.2, "poly": 0, "nourkrin": 0, "vitaD": 0, "ferro": 0, "creatina": 0, "minoxidil": 0, "magnesio": 0, "foods": "", "notes": ""}, {"date": "2026-01-10", "prot": 112.8, "carbs": 0, "fat": 0, "fib": 13.0, "cal": 1681, "deficit": 19, "water": 2000, "sleep": 7.8, "ker": 0, "ex": "60 min", "kg": 61.4, "poly": 0, "nourkrin": 0, "vitaD": 0, "ferro": 0, "creatina": 0, "minoxidil": 0, "magnesio": 0, "foods": "", "notes": ""}, {"date": "2026-01-11", "prot": 83.8, "carbs": 0, "fat": 0, "fib": 8.1, "cal": 1138, "deficit": 562, "water": 1500, "sleep": 8.2, "ker": 0, "ex": "", "kg": 61.4, "poly": 0, "nourkrin": 0, "vitaD": 0, "ferro": 0, "creatina": 0, "minoxidil": 0, "magnesio": 0, "foods": "", "notes": ""}, {"date": "2026-01-12", "prot": 23.1, "carbs": 0, "fat": 0, "fib": 9.9, "cal": 806, "deficit": 894, "water": 1500, "sleep": 5.6, "ker": 0, "ex": "", "kg": 60.9, "poly": 0, "nourkrin": 0, "vitaD": 0, "ferro": 0, "creatina": 0, "minoxidil": 0, "magnesio": 0, "foods": "", "notes": ""}, {"date": "2026-01-13", "prot": 0.0, "carbs": 0, "fat": 0, "fib": 0.0, "cal": 1504, "deficit": 196, "water": 1500, "sleep": 7.0, "ker": 3, "ex": "60 min", "kg": 61.2, "poly": 0, "nourkrin": 0, "vitaD": 0, "ferro": 0, "creatina": 0, "minoxidil": 0, "magnesio": 0, "foods": "", "notes": ""}, {"date": "2026-01-14", "prot": 3.5, "carbs": 0, "fat": 0, "fib": 0.8, "cal": 1123, "deficit": 577, "water": 1000, "sleep": 7.3, "ker": 0, "ex": "", "kg": 60.9, "poly": 0, "nourkrin": 0, "vitaD": 0, "ferro": 0, "creatina": 0, "minoxidil": 0, "magnesio": 0, "foods": "", "notes": ""}, {"date": "2026-01-15", "prot": 3.0, "carbs": 0, "fat": 0, "fib": 0.0, "cal": 1341, "deficit": 359, "water": 1000, "sleep": 7.7, "ker": 2, "ex": "50 min", "kg": 60.9, "poly": 0, "nourkrin": 0, "vitaD": 0, "ferro": 0, "creatina": 0, "minoxidil": 0, "magnesio": 0, "foods": "", "notes": ""}, {"date": "2026-01-16", "prot": 0.0, "carbs": 0, "fat": 0, "fib": 3.0, "cal": 1287, "deficit": 413, "water": 1000, "sleep": 7.1, "ker": 3, "ex": "", "kg": 61.2, "poly": 0, "nourkrin": 0, "vitaD": 0, "ferro": 0, "creatina": 0, "minoxidil": 0, "magnesio": 0, "foods": "", "notes": ""}, {"date": "2026-01-17", "prot": 20.1, "carbs": 0, "fat": 0, "fib": 0.0, "cal": 1835, "deficit": -135, "water": 1500, "sleep": 9.0, "ker": 3, "ex": "45 min", "kg": 61.1, "poly": 0, "nourkrin": 0, "vitaD": 0, "ferro": 0, "creatina": 0, "minoxidil": 0, "magnesio": 0, "foods": "", "notes": ""}, {"date": "2026-01-18", "prot": 0.0, "carbs": 0, "fat": 0, "fib": 0.0, "cal": 1136, "deficit": 564, "water": 1000, "sleep": 10.0, "ker": 2, "ex": "45 min", "kg": 61.1, "poly": 0, "nourkrin": 0, "vitaD": 0, "ferro": 0, "creatina": 0, "minoxidil": 0, "magnesio": 0, "foods": "", "notes": ""}, {"date": "2026-01-19", "prot": 21.6, "carbs": 0, "fat": 0, "fib": 1.7, "cal": 1568, "deficit": 132, "water": 1000, "sleep": 7.3, "ker": 0, "ex": "", "kg": 60.8, "poly": 0, "nourkrin": 0, "vitaD": 0, "ferro": 0, "creatina": 0, "minoxidil": 0, "magnesio": 0, "foods": "", "notes": ""}, {"date": "2026-01-20", "prot": 7.2, "carbs": 0, "fat": 0, "fib": 3.4, "cal": 1210, "deficit": 490, "water": 1000, "sleep": 6.5, "ker": 2, "ex": "45 min", "kg": 61.5, "poly": 0, "nourkrin": 0, "vitaD": 0, "ferro": 0, "creatina": 0, "minoxidil": 0, "magnesio": 0, "foods": "", "notes": ""}, {"date": "2026-01-21", "prot": 7.2, "carbs": 0, "fat": 0, "fib": 3.4, "cal": 1368, "deficit": 332, "water": 1000, "sleep": 7.0, "ker": 0, "ex": "45 min", "kg": 61.5, "poly": 0, "nourkrin": 0, "vitaD": 0, "ferro": 0, "creatina": 0, "minoxidil": 0, "magnesio": 0, "foods": "", "notes": ""}, {"date": "2026-01-22", "prot": 0.0, "carbs": 0, "fat": 0, "fib": 0.0, "cal": 1479, "deficit": 221, "water": 1000, "sleep": 6.5, "ker": 0, "ex": "", "kg": 0, "poly": 0, "nourkrin": 0, "vitaD": 0, "ferro": 0, "creatina": 0, "minoxidil": 0, "magnesio": 0, "foods": "", "notes": ""}, {"date": "2026-01-23", "prot": 0.0, "carbs": 0, "fat": 0, "fib": 0.0, "cal": 1354, "deficit": 346, "water": 1000, "sleep": 6.0, "ker": 1, "ex": "", "kg": 61.5, "poly": 0, "nourkrin": 0, "vitaD": 0, "ferro": 0, "creatina": 0, "minoxidil": 0, "magnesio": 0, "foods": "", "notes": ""}, {"date": "2026-01-24", "prot": 2.5, "carbs": 0, "fat": 0, "fib": 0.3, "cal": 1456, "deficit": 244, "water": 1000, "sleep": 8.0, "ker": 1, "ex": "90 min", "kg": 0, "poly": 0, "nourkrin": 0, "vitaD": 0, "ferro": 0, "creatina": 0, "minoxidil": 0, "magnesio": 0, "foods": "", "notes": ""}, {"date": "2026-01-25", "prot": 0.0, "carbs": 0, "fat": 0, "fib": 0.0, "cal": 1831, "deficit": -131, "water": 1000, "sleep": 9.0, "ker": 1, "ex": "", "kg": 61.5, "poly": 0, "nourkrin": 0, "vitaD": 0, "ferro": 0, "creatina": 0, "minoxidil": 0, "magnesio": 0, "foods": "", "notes": ""}, {"date": "2026-01-26", "prot": 32.5, "carbs": 0, "fat": 0, "fib": 0, "cal": 996, "deficit": 704, "water": 2000, "sleep": 7.0, "ker": 1, "ex": "60 min", "kg": 61.6, "poly": 0, "nourkrin": 0, "vitaD": 0, "ferro": 0, "creatina": 0, "minoxidil": 0, "magnesio": 0, "foods": "", "notes": ""}, {"date": "2026-01-27", "prot": 14.0, "carbs": 0, "fat": 0, "fib": 0, "cal": 1473, "deficit": 227, "water": 2000, "sleep": 6.9, "ker": 1, "ex": "", "kg": 61.2, "poly": 0, "nourkrin": 0, "vitaD": 0, "ferro": 0, "creatina": 0, "minoxidil": 0, "magnesio": 0, "foods": "", "notes": ""}, {"date": "2026-01-28", "prot": 0.0, "carbs": 0, "fat": 0, "fib": 0, "cal": 1221, "deficit": 479, "water": 2000, "sleep": 6.9, "ker": 2, "ex": "", "kg": 61.3, "poly": 0, "nourkrin": 0, "vitaD": 0, "ferro": 0, "creatina": 0, "minoxidil": 0, "magnesio": 0, "foods": "", "notes": ""}, {"date": "2026-01-29", "prot": 0.0, "carbs": 0, "fat": 0, "fib": 0, "cal": 1382, "deficit": 318, "water": 2000, "sleep": 7.0, "ker": 2, "ex": "90 min", "kg": 60.8, "poly": 0, "nourkrin": 0, "vitaD": 0, "ferro": 0, "creatina": 0, "minoxidil": 0, "magnesio": 0, "foods": "", "notes": ""}, {"date": "2026-01-30", "prot": 0.0, "carbs": 0, "fat": 0, "fib": 0, "cal": 1481, "deficit": 219, "water": 1500, "sleep": 7.0, "ker": 2, "ex": "", "kg": 0, "poly": 0, "nourkrin": 0, "vitaD": 0, "ferro": 0, "creatina": 0, "minoxidil": 0, "magnesio": 0, "foods": "", "notes": ""}, {"date": "2026-01-31", "prot": 0, "carbs": 0, "fat": 0, "fib": 0, "cal": 1826, "deficit": -126, "water": 800, "sleep": 7.7, "ker": 2, "ex": "", "kg": 61.3, "poly": 0, "nourkrin": 0, "vitaD": 0, "ferro": 0, "creatina": 0, "minoxidil": 0, "magnesio": 0, "foods": "", "notes": ""}, {"date": "2026-02-02", "prot": 72.6, "carbs": 75.7, "fat": 45.4, "fib": 8.1, "cal": 1056.0, "deficit": 644.0, "water": 1000.0, "sleep": 7.0, "ker": 0.5, "ex": 0, "poly": 1, "nourkrin": 0, "vitaD": 0, "ferro": 0, "creatina": 0, "minoxidil": 0, "magnesio": 0, "foods": "crepioca, ovo, quibinho de festa, 0.7x torta de chocolate, coxa e sobrecoxa desossada, 2.0x pão integral, 2.0x requeijão light, leite em pó desnatado, coxa e sobrecoxa desossada, feijão carioca"}, {"date": "2026-02-03", "prot": 113.0, "carbs": 101.6, "fat": 23.2, "fib": 8.9, "cal": 1068.0, "deficit": 632.0, "water": 2000.0, "sleep": 7.0, "ker": 0, "ex": 200.0, "poly": 0, "nourkrin": 1, "vitaD": 0, "ferro": 0, "creatina": 0, "minoxidil": 1, "magnesio": 0, "foods": "leite em pó desnatado, 2.0x ovo, 2.0x pão integral, arroz, feijão carioca, coxão mole, 2.0x pão integral, 2.0x requeijão light, leite em pó desnatado, peito de frango, feijão carioca, 5.0x leite em pó desnatado", "kg": 61.2}, {"date": "2026-02-04", "prot": 87.3, "carbs": 168.3, "fat": 90.7, "fib": 14.8, "cal": 1822.0, "deficit": -122.0, "water": 1500.0, "sleep": 6.8, "ker": 3.0, "ex": 0, "poly": 1, "nourkrin": 1, "vitaD": 0, "ferro": 0, "creatina": 1, "minoxidil": 1, "magnesio": 0, "foods": "crepioca, leite semi 50ml, 2.0x queijo minas frescal, whey 20g, leite integral 50ml, 3.0x leite semi 50ml, torta de chocolate, 2.0x quibinho de festa, 6.0x coxinha de festa, 2.0x queijo minas frescal, pão integral, 2.0x requeijão, 2.0x ovo, pipoca nhac"}, {"date": "2026-02-05", "prot": 75.4, "carbs": 119.8, "fat": 25.1, "fib": 10.8, "cal": 952.5, "deficit": 747.5, "water": 1500.0, "sleep": 8.0, "ker": 0, "ex": 0, "poly": 1, "nourkrin": 1, "vitaD": 0, "ferro": 0, "creatina": 0, "minoxidil": 1, "magnesio": 0, "foods": "pão francês, ovo, polenguinho, tilápia, lentilha, crepioca, leite semi 50ml, queijo minas frescal, 0.5x batata cozida 100g, 0.3x batata frita 100g, 6.0x leite em pó desnatado", "kg": 61.4}, {"date": "2026-02-06", "prot": 90.6, "carbs": 73.8, "fat": 23.2, "fib": 14.5, "cal": 921.0, "deficit": 779.0, "water": 1500.0, "sleep": 6.0, "ker": 0, "ex": 150.0, "poly": 0, "nourkrin": 0, "vitaD": 0, "ferro": 0, "creatina": 0, "minoxidil": 0, "magnesio": 0, "foods": "crepioca, leite semi 50ml, queijo minas frescal, leite em pó semi, peito de frango, feijão carioca, mix de legumes 80g, peito de frango, feijão carioca, mix de legumes 80g, pipoca yoki 30g"}, {"date": "2026-02-09", "prot": 94.6, "carbs": 122.0, "fat": 43.6, "fib": 29.1, "cal": 1353.5, "deficit": 346.5, "water": 2000.0, "sleep": 6.6, "ker": 2.0, "ex": 0, "poly": 1, "nourkrin": 1, "vitaD": 1, "ferro": 1, "creatina": 0, "minoxidil": 1, "magnesio": 0, "foods": "crepioca, leite em pó desnatado, 3.0x queijo minas frescal, whey 20g, 2.0x farelo de aveia, 1.2x mamão, contrafilé, 1.3x mix de legumes 80g, feijão preto, 2.0x pão integral, guacamole 100g, leite em pó desnatado, 1.8x mix de legumes 80g, 0.7x coxa e sobrecoxa desossada, 0.5x pipoca yoki 30g", "kg": 62.15}, {"date": "2026-02-10", "prot": 87.6, "carbs": 129.5, "fat": 28.9, "fib": 15.9, "cal": 1238.0, "deficit": 462.0, "water": 2000.0, "sleep": 7.0, "ker": 2.0, "ex": 300.0, "poly": 1, "nourkrin": 1, "vitaD": 1, "ferro": 1, "creatina": 0, "minoxidil": 1, "magnesio": 1, "foods": "crepioca, leite em pó desnatado, 3.0x queijo minas frescal, whey 20g, 2.0x farelo de aveia, 1.2x mamão, 1.8x mix de legumes 80g, 0.7x coxa e sobrecoxa desossada, batata cozida 100g, barra supino banana, leite em pó desnatado, 2.0x ovo, 5.0x leite em pó desnatado"}, {"date": "2026-02-11", "prot": 60.0, "carbs": 87.7, "fat": 22.6, "fib": 10.9, "cal": 783.0, "deficit": 917.0, "water": 2000.0, "sleep": 7.0, "ker": 2.0, "ex": 0, "poly": 1, "nourkrin": 1, "vitaD": 1, "ferro": 1, "creatina": 0, "minoxidil": 1, "magnesio": 1, "foods": "2.0x pão integral, 2.0x ovo, whey 20g, farelo de aveia, mamão, 1.3x feijão carioca, 5.0x leite em pó desnatado, 2.0x pão integral, manteiga", "kg": 61.9}, {"date": "2026-02-12", "prot": 63.3, "carbs": 82.7, "fat": 34.7, "fib": 19.3, "cal": 997.0, "deficit": 703.0, "water": 1800.0, "sleep": 6.3, "ker": 0, "ex": 300.0, "poly": 1, "nourkrin": 1, "vitaD": 1, "ferro": 1, "creatina": 0, "minoxidil": 1, "magnesio": 1, "foods": "2.0x crepioca, queijo minas, kefir 150g, whey 20g, chia, feijão carioca, 1.8x mix de legumes 80g, 2.0x ovo, 1.8x mix de legumes 80g"}, {"date": "2026-02-13", "prot": 101.2, "carbs": 144.9, "fat": 28.8, "fib": 15.6, "cal": 1221.0, "deficit": 479.0, "water": 1800.0, "sleep": 7.1, "ker": 0, "ex": 0, "poly": 1, "nourkrin": 1, "vitaD": 1, "ferro": 0, "creatina": 0, "minoxidil": 1, "magnesio": 1, "foods": "2.0x pão integral, 2.0x queijo minas, ovo, 3.0x leite integral 50ml, whey 20g, farelo de aveia, mamão, peito de frango, arroz integral, feijão carioca, farofa 20g, 2.0x pão integral, leite em pó desnatado, pipoca yoki 30g, 5.0x leite em pó desnatado"}, {"date": "2026-02-14", "prot": 46.9, "carbs": 35.5, "fat": 13.6, "fib": 1.7, "cal": 428.0, "deficit": 1272.0, "water": 1000.0, "sleep": 7.0, "ker": 3.0, "ex": 0, "poly": 0, "nourkrin": 0, "vitaD": 0, "ferro": 0, "creatina": 0, "minoxidil": 1, "magnesio": 0, "foods": "0.5x arroz integral, peito de frango, pão francês, 3.0x queijo mussarela, ketchup sachê 7g"}, {"date": "2026-02-15", "prot": 25.2, "carbs": 27.4, "fat": 23.9, "fib": 3.1, "cal": 1169.0, "deficit": 531.0, "water": 1000.0, "sleep": 7.0, "ker": 3.0, "ex": 200.0, "poly": 1, "nourkrin": 1, "vitaD": 0, "ferro": 0, "creatina": 0, "minoxidil": 1, "magnesio": 1, "foods": "2.0x ovo, pão integral, leite em pó desnatado, spaghetti à bolonhesa 200g, 2.0x pão integral, queijo mussarela, manteiga, 2.0x spaghetti à bolonhesa 200g, leite integral 50ml", "kg": 61.0}, {"date": "2026-02-16", "prot": 54.8, "carbs": 123.2, "fat": 45.3, "fib": 5.9, "cal": 1352.0, "deficit": 348.0, "water": 1500.0, "sleep": 0, "ker": 2.0, "ex": 0, "poly": 1, "nourkrin": 1, "vitaD": 1, "ferro": 0, "creatina": 0, "minoxidil": 1, "magnesio": 1, "foods": "2.0x pão integral, 0.5x manteiga, 2.0x ovo, 2.0x leite em pó desnatado, uvas 30g, linguiça calabresa 30g, arroz, 0.5x coxa e sobrecoxa desossada, 0.3x picanha, 3.0x leite condensado 20g, nescau 1 col sobremesa, spaghetti à bolonhesa 200g, coca-cola 200ml, pipoca yoki 30g"}, {"date": "2026-02-17", "prot": 59.7, "carbs": 80.4, "fat": 76.1, "fib": 10.1, "cal": 1214.0, "deficit": 486.0, "water": 1500.0, "sleep": 0, "ker": 3.0, "ex": 300.0, "poly": 1, "nourkrin": 1, "vitaD": 1, "ferro": 0, "creatina": 0, "minoxidil": 1, "magnesio": 1, "foods": "pão integral, manteiga, ovo, leite em pó desnatado, picanha, farofa 20g, 0.7x feijão tropeiro 100g, 0.7x batata frita 100G, ovo, risoto 40g, amendoim japonês 30g"}, {"date": "2026-02-18", "prot": 125.3, "carbs": 96.8, "fat": 40.8, "fib": 15.1, "cal": 1292.0, "deficit": 408.0, "water": 2000.0, "sleep": 7.0, "ker": 0, "ex": 350.0, "poly": 1, "nourkrin": 1, "vitaD": 1, "ferro": 1, "creatina": 0, "minoxidil": 1, "magnesio": 1, "foods": "ovo, clara de ovo, tapioca, farelo de aveia, mussarela de búfala 18g, leite em pó desnatado, mamão, farelo de aveia, whey 20g, leite sem lactose 250ml, coxa e sobrecoxa desossada, 1.5x mix de legumes 80g, rap 10 wickbold integral, ovo, presunto 1 fatia, peito de frango, mix de legumes 80g, azeite 5ml, feijão preto"}, {"date": "2026-02-19", "prot": 127.4, "carbs": 103.2, "fat": 53.9, "fib": 18.0, "cal": 1439.0, "deficit": 261.0, "water": 1500.0, "sleep": 7.0, "ker": 2.0, "ex": 0, "poly": 0, "nourkrin": 0, "vitaD": 0, "ferro": 0, "creatina": 0, "minoxidil": 0, "magnesio": 0, "foods": "2.0x ovo, tapioca, 2.0x farelo de aveia, mussarela de búfala 18g, 0.8x leite sem lactose 250ml, mamão, leite em pó desnatado, peito de frango, 1.2x feijão preto, 1.2x kefir 150g, whey 20g, 1.1x granola tia sônia 30g, chia, coxão duro, 1.2x mix de legumes 80g, 0.5x azeite 5ml, ovo", "kg": 61.4}, {"date": "2026-02-20", "prot": 117.7, "carbs": 96.1, "fat": 48.8, "fib": 13.3, "cal": 1362.6, "deficit": 337.4, "water": 2000.0, "sleep": 7.0, "ker": 0, "ex": 0, "poly": 0, "nourkrin": 0, "vitaD": 0, "ferro": 0, "creatina": 0, "minoxidil": 0, "magnesio": 0, "foods": "2.0x ovo, 2.0x pão integral, leite em pó desnatado, 1.2x kefir 150g, whey 20g, chia, coxão duro, mix de legumes 80g, 0.5x azeite 5ml, 2.0x pão de fôrma, 0.3x manteiga, ovo, patinho, mix de legumes 80g, flan diet, feijão preto"}, {"date": "2026-02-21", "prot": 143.2, "carbs": 116.6, "fat": 51.9, "fib": 13.6, "cal": 1424.0, "deficit": 276.0, "water": 1500.0, "sleep": 7.0, "ker": 3.0, "ex": 200.0, "poly": 0, "nourkrin": 0, "vitaD": 0, "ferro": 0, "creatina": 0, "minoxidil": 0, "magnesio": 0, "foods": "2.0x ovo, 2.0x pão integral, leite em pó desnatado, cottage light, kefir 150g, whey 20g, chia, patinho, mix de legumes 80g, arroz, flan diet, pão integral, cottage light, paçoca zero, patinho, rap 10 wickbold integral, 1.5x ketchup sachê 7g, pipoca yoki 30g", "kg": 60.9}, {"date": "2026-02-22", "prot": 67.5, "carbs": 61.4, "fat": 21.9, "fib": 8.4, "cal": 738.0, "deficit": 962.0, "water": 2000.0, "sleep": 7.0, "ker": 0, "ex": 200.0, "poly": 0, "nourkrin": 0, "vitaD": 0, "ferro": 0, "creatina": 0, "minoxidil": 0, "magnesio": 0, "foods": "2.0x ovo, 2.0x pão integral, leite em pó desnatado, cottage light, patinho, mix de legumes 80g, arroz, mamão, farelo de aveia, whey 20g", "kg": 61.4}, {"date": "2026-02-23", "prot": 121.9, "carbs": 85.3, "fat": 37.2, "fib": 13.6, "cal": 1214.4, "deficit": 485.6, "water": 1000.0, "sleep": 6.0, "ker": 3.0, "ex": 0.0, "poly": 0, "nourkrin": 0, "vitaD": 0, "ferro": 0, "creatina": 0, "minoxidil": 0, "magnesio": 0, "foods": "2.0x pão integral, 2.0x ovo, leite sem lactose 250ml, mamão, whey 20g, farelo de aveia, peito de frango, mix de legumes 80g, azeite 5ml, peito de frango, mix de legumes 80g, azeite 5ml, 1.5x feijão carioca, 0.3x linguiça calabresa 30g, 2.0x leite em pó desnatado"}, {"date": "2026-02-24", "prot": 137.2, "carbs": 113.0, "fat": 42.0, "fib": 14.5, "cal": 1410.5, "deficit": 289.5, "water": 500.0, "sleep": 7.0, "ker": 2.0, "ex": 0.0, "poly": 0, "nourkrin": 0, "vitaD": 0, "ferro": 0, "creatina": 0, "minoxidil": 0, "magnesio": 0, "foods": "2.0x pão integral, 2.0x ovo, leite sem lactose 250ml, mamão, whey 20g, farelo de aveia, peito de frango, 1.5x feijão carioca, leite sem lactose 250ml, pão integral, 2.0x queijo minas frescal, cottage light, coxão mole, mix de legumes 80g, azeite 5ml, feijão carioca, 3.5x leite em pó desnatado"}, {"date": "2026-02-25", "prot": 119.6, "carbs": 120.5, "fat": 47.2, "fib": 13.8, "cal": 1433.0, "deficit": 267.0, "water": 0, "sleep": 0, "ker": 2.0, "ex": 0.0, "poly": 0, "nourkrin": 0, "vitaD": 0, "ferro": 0, "creatina": 0, "minoxidil": 0, "magnesio": 0, "foods": "pão integral, 2.0x ovo, leite sem lactose 250ml, 3.0x queijo minas frescal, mamão, whey 20g, farelo de aveia, coxão mole, mix de legumes 80g, azeite 5ml, feijão carioca, pão artesano, pão artesano, manteiga, tilápia, mix de legumes 80g, 4.0x leite em pó desnatado"}, {"date": "2026-02-26", "prot": 102.0, "carbs": 110.7, "fat": 34.1, "fib": 14.9, "cal": 1142.0, "deficit": 558.0, "water": 0, "sleep": 0, "ker": 0, "ex": 0.0, "poly": 0, "nourkrin": 0, "vitaD": 0, "ferro": 0, "creatina": 0, "minoxidil": 0, "magnesio": 0, "foods": "2.0x ovo, 3.0x farelo de aveia, 2.0x tapioca, 2.0x queijo minas, leite em pó desnatado, leite em pó desnatado, peito de frango, mix de legumes 80g, azeite 5ml, 4.0x leite em pó desnatado, 0.7x peito de frango, queijo mussarela, 1.2x pipoca yoki 30g"}, {"date": "2026-02-27", "prot": 117.8, "carbs": 243.1, "fat": 71.3, "fib": 9.7, "cal": 1778.0, "deficit": -78.0, "water": 0, "sleep": 0, "ker": 0, "ex": 0.0, "poly": 0, "nourkrin": 0, "vitaD": 0, "ferro": 0, "creatina": 0, "minoxidil": 0, "magnesio": 0, "foods": "2.0x ovo, 2.0x pão integral, 4.0x leite integral 50ml, 3.0x pão de queijo coquetel, peito de frango, mix de legumes 80g, azeite 5ml, 4.0x leite em pó desnatado, 2.0x rosquinha de coco, fettuccine ao molho branco, brownie 60g, peito de frango"}, {"date": "2026-02-28", "prot": 75.3, "carbs": 189.9, "fat": 68.0, "fib": 2.4, "cal": 1132.0, "deficit": 568.0, "water": 0, "sleep": 0, "ker": 0, "ex": 0, "poly": 0, "nourkrin": 0, "vitaD": 0, "ferro": 0, "creatina": 0, "minoxidil": 0, "magnesio": 0, "foods": "2.0x ovo, 1.5x queijo minas frescal, leite em pó desnatado, patinho, mix de legumes 80g, azeite 5ml, 6.0x pão de queijo coquetel, 0.8x patinho, queijo mussarela, 0.5x manteiga"}, {"date": "2026-03-01", "prot": 70.1, "carbs": 132.0, "fat": 38.0, "fib": 9.3, "cal": 1090.0, "deficit": 610.0, "water": 0, "sleep": 0, "ker": 0, "ex": 0, "poly": 0, "nourkrin": 0, "vitaD": 0, "ferro": 0, "creatina": 0, "minoxidil": 0, "magnesio": 0, "foods": "ovo, queijo minas frescal, leite em pó desnatado, leite desnatado 50ml, nescau 1 col sobremesa, granola tia sônia 30g, patinho, feijão carioca, 0.5x farofa 20g, 1.5x rosquinha de coco, 2.0x pão francês, ovo"}, {"date": "2026-03-02", "prot": 79.2, "carbs": 103.0, "fat": 42.7, "fib": 16.4, "cal": 1085.0, "deficit": 615.0, "water": 800.0, "sleep": 7.0, "ker": 3.0, "ex": 0.0, "poly": 0, "nourkrin": 0, "vitaD": 0, "ferro": 0, "creatina": 0, "minoxidil": 0, "magnesio": 0, "foods": "2.0x ovo, 2.0x pão integral, 5.0x leite em pó desnatado, bolo mesclado, 0.7x arroz integral, 0.2x feijão carioca, 0.8x coxão mole, farelo de aveia, whey 20g, açaí 300 ml", "kg": 60.9}, {"date": "2026-03-03", "prot": 68.2, "carbs": 69.9, "fat": 27.7, "fib": 10.7, "cal": 835.5, "deficit": 864.5, "water": 800.0, "sleep": 7.5, "ker": 0.0, "ex": 0.0, "poly": 0, "nourkrin": 0, "vitaD": 0, "ferro": 0, "creatina": 0, "minoxidil": 0, "magnesio": 0, "foods": "2.0x ovo, pão integral, 4.0x leite integral 50ml, ricota, queijo minas frescal, farelo de aveia, whey 20g, 1.5x mamão, mix de legumes 80g, 0.5x coxão duro, feijão preto, pão integral, ricota, queijo minas frescal, leite em pó desnatado", "kg": 60.5}, {"date": "2026-03-04", "prot": 95.4, "carbs": 214.6, "fat": 69.3, "fib": 17.0, "cal": 1715.6, "deficit": -15.6, "water": 500.0, "sleep": 6.0, "ker": 1.0, "ex": 0.0, "poly": 0, "nourkrin": 0, "vitaD": 0, "ferro": 0, "creatina": 0, "minoxidil": 0, "magnesio": 0, "foods": "2.0x ovo, pão integral, leite em pó desnatado, 0.8x manteiga, farelo de aveia, whey 20g, mamão, mix de legumes 80g, coxão duro, feijão preto, 4.0x leite desnatado 50ml, 2.0x granola tia sônia 30g, 1.5x rosquinha de coco, 2.0x pão de queijo coquetel, 1.3x pizza de calabresa", "kg": 60.5}, {"date": "2026-03-09", "prot": 126.6, "carbs": 173.0, "fat": 40.0, "fib": 24.1, "cal": 1514.0, "deficit": 186.0, "water": 1000.0, "sleep": 7.9, "ker": 3.0, "ex": 45.0, "poly": 0, "nourkrin": 0, "vitaD": 0, "ferro": 0, "creatina": 0, "minoxidil": 0, "magnesio": 0, "foods": "1.5x farelo de aveia, tapioca, 2.0x ovo, leite em pó desnatado, mamão, farelo de aveia, whey 20g, coxão mole, arroz, lentilha, 3.0x leite em pó desnatado, coxão mole, arroz, lentilha, 2.0x pipoca yoki 30g, 3.0x leite em pó desnatado", "kg": 60.8}, {"date": "2026-03-10", "prot": 67.5, "carbs": 118.1, "fat": 18.4, "fib": 8.3, "cal": 905.0, "deficit": 795.0, "water": 0, "sleep": 9.0, "ker": 3.0, "ex": 0, "poly": 0, "nourkrin": 0, "vitaD": 0, "ferro": 0, "creatina": 0, "minoxidil": 0, "magnesio": 0, "foods": "5.0x tapioca, 2.0x ovo, 2.0x queijo minas frescal, leite em pó desnatado, leite em pó desnatado, 2.0x arroz, 2.0x grão de bico, peito de frango, leite em pó desnatado"}],sheetsUrl:'https://sheetdb.io/api/v1/k1js0erbdfduo', lastDate:'',
 };
+// ── PERSISTENCE ──────────────────────────────────────────────────────────────
+function persist(){
+  // localStorage as fast local cache
+  try{ localStorage.setItem('nutr3', JSON.stringify(state)); }catch(e){}
+}
+
+// Debounced Supabase save — fires 2s after last change
+let _saveTimer = null;
+function persistRemote(){
+  persist(); // save locally immediately
+  clearTimeout(_saveTimer);
+  _saveTimer = setTimeout(saveToSupabase, 2000);
+}
+
+async function saveToSupabase(){
+  try{
+    const snapshot = JSON.parse(JSON.stringify(state));
+    await fetch(SUPA_URL+'/rest/v1/nutrition_state',
+      { method:'POST',
+        headers:{ 'apikey':SUPA_KEY,'Authorization':'Bearer '+SUPA_KEY,
+          'Content-Type':'application/json','Prefer':'resolution=merge-duplicates' },
+        body: JSON.stringify({id:1, data: snapshot})
+      }
+    );
+  }catch(e){ console.warn('saveToSupabase error:',e); }
+}
+
+function todayKey(){
+  const d=new Date();
+  return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+}
+
+function getActiveDate(){
+  const el=document.getElementById('active-date');
+  return (el&&el.value) ? el.value : todayKey();
+}
+
+function load(){
+  // Load from localStorage as fast startup cache
+  try{
+    const s=localStorage.getItem('nutr3');
+    if(s){
+      const saved=JSON.parse(s);
+      const htmlDays=[...state.days];
+      state=Object.assign({},state,saved);
+      const merged={};
+      htmlDays.forEach(d=>merged[d.date]=d);
+      (saved.days||[]).forEach(d=>merged[d.date]=d);
+      state.days=Object.values(merged).sort((a,b)=>a.date.localeCompare(b.date));
+      if(!state.treinos) state.treinos=[];
+      if(!state.treinoTypes) state.treinoTypes=null;
+    }
+  }catch(e){}
+  const today=todayKey();
+  if(state.lastDate!==today){
+    state.foods=[];state.vit={};state.waterChecks=0;
+    state.sleep='';state.kgToday='';state.exToday='';state.kerToday='';
+    state.lastDate=today;persist();
+  }
+}
+
+function loadCustomFoods(){
+  if(state.customFoods && state.customFoods.length){
+    state.customFoods.forEach(f=>{ if(!FOODS.find(x=>x.n===f.n)) FOODS.push(f); });
+  }
+}
+
+
 
 // ── SYNC FROM SHEETS ─────────────────────────────────────────────────────────
 const SUPA_URL = 'https://tatvymywnvnwrpzyrwey.supabase.co';
 const SUPA_KEY = 'sb_publishable_fQf2wI77du-X_oE4ML77og_Op6W80Ic';
 
 async function syncFromSheets(){
-  try {
+  try{
+    // Load daily rows from nutrition table
     const res = await fetch(
       SUPA_URL+'/rest/v1/nutrition?select=*&order=date.asc',
-      { headers: { 'apikey':SUPA_KEY, 'Authorization':'Bearer '+SUPA_KEY } }
+      {headers:{'apikey':SUPA_KEY,'Authorization':'Bearer '+SUPA_KEY}}
     );
     if(!res.ok) return;
     const rows = await res.json();
@@ -1006,27 +1045,26 @@ async function syncFromSheets(){
     state.days.forEach(function(d){ merged[d.date]=d; });
     rows.forEach(function(r){
       if(!r.date||r.date>todayKey()) return;
-      var foods = [];
-      if(r.foods && r.foods.charAt(0)==='['){
-        try{ foods=JSON.parse(r.foods); }catch(e){ foods=[]; }
-      }
-      merged[r.date] = {
-        date:r.date, prot:pf(r.prot), carbs:pf(r.carbs), fat:pf(r.fat),
-        fib:pf(r.fib), cal:pf(r.cal), deficit:pf(r.deficit), water:pf(r.water),
-        sleep:pf(r.sleep), ker:pf(r.ker), ex:r.ex||'', kg:pf(r.kg),
-        poly:pf(r.poly), nourkrin:pf(r.nourkrin), vitaD:pf(r.vitaD),
-        vitC:pf(r.vitC||0), ferro:pf(r.ferro),
+      var foods=[];
+      if(r.foods&&r.foods.charAt(0)==='['){try{foods=JSON.parse(r.foods);}catch(e){}}
+      merged[r.date]={
+        date:r.date,prot:pf(r.prot),carbs:pf(r.carbs),fat:pf(r.fat),
+        fib:pf(r.fib),cal:pf(r.cal),deficit:pf(r.deficit),water:pf(r.water),
+        sleep:pf(r.sleep),ker:pf(r.ker),ex:r.ex||'',kg:pf(r.kg),
+        poly:pf(r.poly),nourkrin:pf(r.nourkrin),vitaD:pf(r.vitaD),
+        vitC:pf(r.vitC||0),ferro:pf(r.ferro),
         colageno:pf(r.colageno||r.creatina||0),
-        minoxidil:pf(r.minoxidil), magnesio:pf(r.magnesio),
-        foods:r.foods||'', notes:r.notes||'', _foods:foods,
+        minoxidil:pf(r.minoxidil),magnesio:pf(r.magnesio),
+        foods:r.foods||'',notes:r.notes||'',_foods:foods,
       };
     });
-    state.days = Object.values(merged).sort(function(a,b){ return a.date.localeCompare(b.date); });
+    state.days=Object.values(merged).sort(function(a,b){return a.date.localeCompare(b.date);});
     persist();
 
-    var today = todayKey();
-    var td = merged[today];
-    if(td && td.cal > 0){
+    // Restore today
+    var today=todayKey();
+    var td=merged[today];
+    if(td&&td.cal>0){
       state.vit={};
       if(td.poly)      state.vit['0-0']=true;
       if(td.nourkrin)  state.vit['0-1']=true;
@@ -1036,55 +1074,27 @@ async function syncFromSheets(){
       if(td.colageno)  state.vit['2-0']=true;
       if(td.minoxidil) state.vit['2-1']=true;
       if(td.magnesio)  state.vit['2-2']=true;
-      state.waterChecks = td.water ? Math.min(4,Math.round(td.water/500)) : 0;
-      state.foods = td._foods||[];
+      state.waterChecks=td.water?Math.min(4,Math.round(td.water/500)):0;
+      state.foods=td._foods||[];
       setTimeout(function(){
-        var sl=document.getElementById('e-sleep'); if(sl) sl.value=td.sleep||'';
-        var kg=document.getElementById('e-kg');    if(kg) kg.value=td.kg||'';
-        var ex=document.getElementById('e-ex');    if(ex) ex.value=td.ex||'';
-        var no=document.getElementById('e-notes'); if(no) no.value=td.notes||'';
-        try{ if(td.ker) setKer(td.ker); }catch(e){}
+        var sl=document.getElementById('e-sleep');if(sl)sl.value=td.sleep||'';
+        var kg=document.getElementById('e-kg');if(kg)kg.value=td.kg||'';
+        var ex=document.getElementById('e-ex');if(ex)ex.value=td.ex||'';
+        var no=document.getElementById('e-notes');if(no)no.value=td.notes||'';
+        try{if(td.ker)setKer(td.ker);}catch(e){}
       },100);
     }
 
-    renderMetrics(); renderFoodList(); renderVitamins(); renderWater();
-    renderWeekCal(); renderRightCol(); renderMiniCals(); renderDailyProgress(); renderWeekRings();
+    renderMetrics();renderFoodList();renderVitamins();renderWater();
+    renderWeekCal();renderRightCol();renderMiniCals();renderDailyProgress();renderWeekRings();
 
     var ind=document.getElementById('sync-indicator');
     if(ind){
       ind.textContent='↑ sincronizado '+new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
       ind.style.opacity='1';
-      setTimeout(function(){ ind.style.opacity='0'; },3000);
+      setTimeout(function(){ind.style.opacity='0';},3000);
     }
-  } catch(e){ if(!e.message||!e.message.includes('fetch')) console.warn('sync error:',e); }
-}
-
-async function pushToSheets(entry){
-  try {
-    var row = {
-      date:entry.date, prot:entry.prot||0, carbs:entry.carbs||0, fat:entry.fat||0,
-      fib:entry.fib||0, cal:entry.cal||0, deficit:entry.deficit||0, water:entry.water||0,
-      sleep:entry.sleep||0, ker:entry.ker||0, ex:entry.ex||'', kg:entry.kg||0,
-      poly:entry.poly||0, nourkrin:entry.nourkrin||0, vitaD:entry.vitaD||0,
-      ferro:entry.ferro||0, creatina:entry.colageno||entry.creatina||0,
-      minoxidil:entry.minoxidil||0, magnesio:entry.magnesio||0,
-      foods:JSON.stringify(entry._foods||[]), notes:entry.notes||'',
-    };
-    var res = await fetch(
-      SUPA_URL+'/rest/v1/nutrition',
-      {
-        method:'POST',
-        headers:{
-          'apikey':SUPA_KEY,
-          'Authorization':'Bearer '+SUPA_KEY,
-          'Content-Type':'application/json',
-          'Prefer':'resolution=merge-duplicates'
-        },
-        body: JSON.stringify(row)
-      }
-    );
-    if(!res.ok) throw new Error('Supabase error: '+res.status);
-  } catch(e){ console.warn('push error:',e); throw e; }
+  }catch(e){console.warn('sync error:',e);}
 }
 
 async function saveDay(){
@@ -2664,11 +2674,16 @@ function renderTasks(){
 load(); initCurrentMonth(); setDate();
 const _adEl=document.getElementById('active-date');if(_adEl)_adEl.value=todayKey();
 loadCustomFoods();
-// Render after DOM is ready
+// Render + sync on startup
 requestAnimationFrame(function(){
   const _nbHoje = document.querySelector('.nb.on') || document.querySelector('.nb');
   nav('hoje', _nbHoje);
+  // Auto sync from Supabase on every load
+  syncFromSheets();
 });
+
+
+
 
 
 
