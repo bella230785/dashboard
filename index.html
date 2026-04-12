@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -1041,30 +1040,42 @@ function showSyncStatus(s){
 async function syncFromSheets(){
   showSyncStatus('syncing');
   try{
-    const resp = await fetch(SB_URL+'/rest/v1/nutrition?id=eq.1&select=value', {headers: sbHeaders()});
-    if(!resp.ok) throw new Error('HTTP '+resp.status);
-    const rows = await resp.json();
-    if(!rows||!rows.length||!rows[0].value){ showSyncStatus('idle'); return; }
-    
-    const remote = JSON.parse(rows[0].value);
-    
-    // Merge remote days into state
+    const res = await fetch(SB_URL+'/rest/v1/nutrition?select=*&order=date.asc&limit=500', {
+      headers: sbHeaders()
+    });
+    if(!res.ok) throw new Error('HTTP '+res.status);
+    const rows = await res.json();
+    if(!Array.isArray(rows)||!rows.length){ showSyncStatus('ok'); return; }
+
+    const pf = v => parseFloat(String(v||0).replace(',','.')) || 0;
     const merged = {};
     state.days.forEach(d => merged[d.date] = d);
-    (remote.days||[]).forEach(d => { if(d.date) merged[d.date] = d; });
+    rows.forEach(r => {
+      const dateVal = r.date || '';
+      if(!dateVal || dateVal.length !== 10 || dateVal > todayKey()) return;
+      const foods = (r.foods && r.foods.startsWith('[')) ? (()=>{try{return JSON.parse(r.foods);}catch(e){return[];}})() : [];
+      const entry = {
+        date:dateVal, prot:pf(r.prot), carbs:pf(r.carbs), fat:pf(r.fat),
+        fib:pf(r.fib), cal:pf(r.cal), deficit:pf(r.deficit), water:pf(r.water),
+        sleep:pf(r.sleep), ker:pf(r.ker), ex:r.ex||'', kg:pf(r.kg),
+        poly:pf(r.poly), nourkrin:pf(r.nourkrin), vitaD:pf(r.vitaD),
+        vitC:pf(r.vitC||0), ferro:pf(r.ferro),
+        colageno:pf(r.colageno||r.creatina||0),
+        minoxidil:pf(r.minoxidil), magnesio:pf(r.magnesio),
+        foods:r.foods||'', notes:r.notes||'', _foods:foods,
+      };
+      if(!merged[dateVal] || (entry.cal > 0 && entry.cal >= (merged[dateVal].cal||0))){
+        merged[dateVal] = entry;
+      }
+    });
     state.days = Object.values(merged).sort((a,b) => a.date.localeCompare(b.date));
-    
-    if(remote.goals)       state.goals       = remote.goals;
-    if(remote.bio)         state.bio         = remote.bio;
-    if(remote.treinos)     state.treinos     = remote.treinos;
-    if(remote.customFoods) state.customFoods = remote.customFoods;
     persist();
 
     // Restore today
     const today = todayKey();
     const td = merged[today];
     if(td && td.cal > 0){
-      state.vit={};
+      state.vit = {};
       if(td.poly)      state.vit['0-0']=true;
       if(td.nourkrin)  state.vit['0-1']=true;
       if(td.vitaD)     state.vit['0-2']=true;
@@ -1074,33 +1085,24 @@ async function syncFromSheets(){
       if(td.minoxidil) state.vit['2-1']=true;
       if(td.magnesio)  state.vit['2-2']=true;
       state.waterChecks = td.water ? Math.min(4, Math.round(td.water/500)) : 0;
-      state.foods = td._foods||[];
+      state.foods = td._foods || [];
       setTimeout(()=>{
         const sl=document.getElementById('e-sleep'); if(sl) sl.value=td.sleep||'';
         const kg=document.getElementById('e-kg');    if(kg) kg.value=td.kg||'';
         const ex=document.getElementById('e-ex');    if(ex) ex.value=td.ex||'';
         const no=document.getElementById('e-notes'); if(no) no.value=td.notes||'';
         try{ if(td.ker) setKer(td.ker); }catch(e){}
-      }, 150);
+      }, 100);
     }
 
     renderMetrics(); renderFoodList(); renderVitamins(); renderWater();
     renderWeekCal(); renderRightCol(); renderMiniCals(); renderDailyProgress(); renderWeekRings();
     showSyncStatus('ok');
-  }catch(e){ console.warn('sync error:',e); showSyncStatus('error'); }
-}
 
-async function pushToSheets(entry){
-  // Salva estado completo no Supabase
-  try{
-    const snapshot = JSON.stringify(state);
-    await fetch(SB_URL+'/rest/v1/nutrition', {
-      method: 'POST',
-      headers: {...sbHeaders(), 'Prefer': 'resolution=merge-duplicates,return=minimal'},
-      body: JSON.stringify({id: 1, value: snapshot})
-    });
-    showSyncStatus('ok');
-  }catch(e){ console.warn('push error:',e); showSyncStatus('error'); throw e; }
+  }catch(e){
+    console.warn('sync error:', e);
+    showSyncStatus('error');
+  }
 }
 
 async function saveDay(){
@@ -1143,6 +1145,27 @@ async function saveDay(){
     msg.textContent='salvo';
   }
   setTimeout(()=>msg.textContent='',3000);
+}
+
+
+async function pushToSheets(entry){
+  try{
+    const row = {
+      date:entry.date, prot:entry.prot||0, carbs:entry.carbs||0, fat:entry.fat||0,
+      fib:entry.fib||0, cal:entry.cal||0, deficit:entry.deficit||0, water:entry.water||0,
+      sleep:entry.sleep||0, ker:entry.ker||0, ex:entry.ex||'', kg:entry.kg||0,
+      poly:entry.poly||0, nourkrin:entry.nourkrin||0, vitaD:entry.vitaD||0,
+      ferro:entry.ferro||0, creatina:entry.colageno||entry.creatina||0,
+      minoxidil:entry.minoxidil||0, magnesio:entry.magnesio||0,
+      foods:JSON.stringify(entry._foods||[]), notes:entry.notes||'',
+    };
+    await fetch(SB_URL+'/rest/v1/nutrition', {
+      method: 'POST',
+      headers: {...sbHeaders(), 'Prefer': 'resolution=merge-duplicates,return=minimal'},
+      body: JSON.stringify(row)
+    });
+    showSyncStatus('ok');
+  }catch(e){ console.warn('push error:',e); showSyncStatus('error'); throw e; }
 }
 
 
