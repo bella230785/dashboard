@@ -2664,10 +2664,11 @@ function renderTasks(){
 load(); initCurrentMonth(); setDate();
 const _adEl=document.getElementById('active-date');if(_adEl)_adEl.value=todayKey();
 loadCustomFoods();
-// Force nav to hoje to ensure all renders fire correctly
-const _nbHoje = document.querySelector('.nb.on') || document.querySelector('.nb');
-nav('hoje', _nbHoje);
-// syncFromSheets() disabled — use manual ↻ button to save API requests
+// Render after DOM is ready
+requestAnimationFrame(function(){
+  const _nbHoje = document.querySelector('.nb.on') || document.querySelector('.nb');
+  nav('hoje', _nbHoje);
+});
 
 
 
